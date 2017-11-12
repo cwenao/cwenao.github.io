@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+  <link href="//cdn.jsdelivr.net/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+  
+
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Springboot,SpringCloud,mybatis,druid," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前置工作  了解Druid、了解Mybatis、了解SpringMVC集成mybatis、了解 dataSource 了解 @Configuration标签 了解   dataSource、Mybatis配置创建dbserver工程   引入druid、mysql、mybatis 因为使用log4j2、thymeleaf引入了其他jar包 引入的包中需要排除相冲突的jar   build.grad">
+<meta name="keywords" content="Springboot,SpringCloud,mybatis,druid">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Springboot - mybatis-druid：集成mybatis&#x2F;druid">
+<meta property="og:url" content="http://blog.kakme.com/2017/11/12/springboot-mybatis-druid/index.html">
+<meta property="og:site_name" content="代码间的无聊生活">
+<meta property="og:description" content="前置工作  了解Druid、了解Mybatis、了解SpringMVC集成mybatis、了解 dataSource 了解 @Configuration标签 了解   dataSource、Mybatis配置创建dbserver工程   引入druid、mysql、mybatis 因为使用log4j2、thymeleaf引入了其他jar包 引入的包中需要排除相冲突的jar   build.grad">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://img.blog.csdn.net/20170129120506720?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-11-12T08:32:05.964Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Springboot - mybatis-druid：集成mybatis&#x2F;druid">
+<meta name="twitter:description" content="前置工作  了解Druid、了解Mybatis、了解SpringMVC集成mybatis、了解 dataSource 了解 @Configuration标签 了解   dataSource、Mybatis配置创建dbserver工程   引入druid、mysql、mybatis 因为使用log4j2、thymeleaf引入了其他jar包 引入的包中需要排除相冲突的jar   build.grad">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170129120506720?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.kakme.com/2017/11/12/springboot-mybatis-druid/"/>
+
+
+
+
+
+  <title>Springboot - mybatis-druid：集成mybatis/druid | 代码间的无聊生活</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">代码间的无聊生活</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">心见是新</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.kakme.com/2017/11/12/springboot-mybatis-druid/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cwenao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://bimg.kakme.com/head_xiaqiu.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="代码间的无聊生活">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Springboot - mybatis-druid：集成mybatis/druid</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-12T16:06:27+08:00">
+                2017-11-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Springboot-SpringCloud/" itemprop="url" rel="index">
+                    <span itemprop="name">Springboot/SpringCloud</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017/11/12/springboot-mybatis-druid/" class="leancloud_visitors" data-flag-title="Springboot - mybatis-druid：集成mybatis/druid">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前置工作"><a href="#前置工作" class="headerlink" title="前置工作"></a><strong>前置工作</strong></h1><blockquote>
+<ul>
+<li>了解Druid、了解Mybatis、了解SpringMVC集成mybatis、了解 <strong>dataSource</strong></li>
+<li>了解 <strong>@Configuration</strong>标签</li>
+<li>了解</li>
+</ul>
+</blockquote>
+<h2 id="dataSource、Mybatis配置"><a href="#dataSource、Mybatis配置" class="headerlink" title="dataSource、Mybatis配置"></a><strong>dataSource、Mybatis配置</strong></h2><p>创建dbserver工程</p>
+<blockquote>
+<ul>
+<li>引入<strong>druid</strong>、<strong>mysql</strong>、<strong>mybatis</strong></li>
+<li>因为使用log4j2、thymeleaf引入了其他jar包</li>
+<li>引入的包中需要排除相冲突的jar</li>
+</ul>
+</blockquote>
+<p><strong>build.gradle</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line">apply plugin: &apos;org.springframework.boot&apos;</div><div class="line">dependencyManagement &#123;</div><div class="line">    imports &#123;</div><div class="line">        mavenBom &quot;org.springframework.cloud:spring-cloud-dependencies:&quot; + springCloudVersion</div><div class="line">        mavenBom &quot;org.springframework.boot:spring-boot-starter:&quot;+ springBootVersion</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">repositories &#123;</div><div class="line">    mavenCentral()</div><div class="line">&#125;</div><div class="line">dependencies &#123;</div><div class="line">    compile (&apos;org.springframework.boot:spring-boot-starter-web:&apos;+springBootVersion)</div><div class="line">    compile(&apos;org.springframework.cloud:spring-cloud-starter-eureka&apos;)</div><div class="line">    compile (&apos;mysql:mysql-connector-java:&apos;+mysqlVersion)</div><div class="line">    compile (&apos;com.alibaba:druid:&apos;+druidVersion)</div><div class="line">    compile (&apos;org.mybatis:mybatis-spring:&apos;+mybatisSpringBootVersion)</div><div class="line">    compile (&apos;org.mybatis:mybatis:&apos;+mybatisVersion)</div><div class="line">    compile(&apos;org.springframework.boot:spring-boot-starter-log4j2&apos;)</div><div class="line">    compile (&apos;org.springframework.boot:spring-boot-starter-thymeleaf&apos;)</div><div class="line">    compile (&apos;net.sourceforge.nekohtml:nekohtml:&apos;+nekoHtmlVersion)</div><div class="line">    compile(&apos;org.apache.logging.log4j:log4j-1.2-api:&apos;+ log4jAPIVersion)</div><div class="line">    compile(&apos;org.springframework.boot:spring-boot-starter-jdbc&apos;)</div><div class="line">    compile(&apos;org.springframework.boot:spring-boot-starter-aop&apos;)</div><div class="line">    compile (&apos;com.alibaba:fastjson:&apos;+fastjsonVersion)</div><div class="line"></div><div class="line">    testCompile (&apos;org.springframework.boot:spring-boot-starter-test&apos;)</div><div class="line">    testCompile group: &apos;junit&apos;, name: &apos;junit&apos;, version: &apos;4.11&apos;</div><div class="line">&#125;</div><div class="line">configurations &#123;</div><div class="line">    all*.exclude module: &apos;spring-boot-starter-logging&apos;</div><div class="line">    all*.exclude module: &apos;logback-classic&apos;</div><div class="line">    all*.exclude module: &apos;log4j-over-slf4j&apos;</div><div class="line">    all*.exclude module: &apos;snappy-java&apos;</div><div class="line">&#125;</div><div class="line">jar &#123;</div><div class="line">    baseName = &apos;db-server-bootcwenao&apos;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>创建<strong>DataConfig</strong>，使用<strong>@Configuration</strong>进行注解</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * @author cwenao</div><div class="line"> * @version $Id DataConfig.java, v 0.1 2017-01-24 17:43 cwenao Exp $$</div><div class="line"> */</div><div class="line"></div><div class="line">@Configuration</div><div class="line">@EnableTransactionManagement</div><div class="line">public class DataConfig &#123;</div><div class="line"></div><div class="line">    @Bean(name=&quot;dataSource&quot;)</div><div class="line">    @ConfigurationProperties(prefix = &quot;druid.datasource&quot;)</div><div class="line">    public DataSource dataSource() &#123;</div><div class="line">        return new DruidDataSource();</div><div class="line">    &#125;</div><div class="line">    @Bean</div><div class="line">    public ResourceBundleMessageSource messageSource() &#123;</div><div class="line">        ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();</div><div class="line">        messageSource.setBasename(&quot;config.message&quot;);</div><div class="line">        messageSource.setDefaultEncoding(&quot;UTF-8&quot;);</div><div class="line">        return messageSource;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>配置<strong>dataSource</strong>相关信息，这里使用了<strong>druid</strong></p>
+<p><strong>application.yml</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line">druid:</div><div class="line">  datasource:</div><div class="line">    driverClassName: com.mysql.jdbc.Driver</div><div class="line">    url: jdbc:mysql://localhost:3306/kakme?useUnicode=true&amp;characterEncoding=UTF-8&amp;useSSL=false</div><div class="line">    username: root</div><div class="line">    password: 111111</div><div class="line">    #初始化连接数量，最大最小连接数</div><div class="line">    initialSize: 5</div><div class="line">    maxActive: 10</div><div class="line">    minIdle: 3</div><div class="line">    #获取连接等待超时的时间</div><div class="line">    maxWait: 600000</div><div class="line">    #超过时间限制是否回收</div><div class="line">    removeAbandoned: true</div><div class="line">    #超过时间限制多长</div><div class="line">    removeAbandonedTimeout: 180</div><div class="line">    #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒</div><div class="line">    timeBetweenEvictionRunsMillis: 600000</div><div class="line">    #配置一个连接在池中最小生存的时间，单位是毫秒</div><div class="line">    minEvictableIdleTimeMillis: 300000</div><div class="line">    #用来检测连接是否有效的sql，要求是一个查询语句</div><div class="line">    validationQuery: SELECT 1 FROM DUAL</div><div class="line">    #申请连接的时候检测</div><div class="line">    testWhileIdle: true</div><div class="line">    #申请连接时执行validationQuery检测连接是否有效，配置为true会降低性能</div><div class="line">    testOnBorrow: false</div><div class="line">    #归还连接时执行validationQuery检测连接是否有效，配置为true会降低性能</div><div class="line">    testOnReturn: false</div><div class="line">    #打开PSCache，并且指定每个连接上PSCache的大小</div><div class="line">    poolPreparedStatements: true</div><div class="line">    maxPoolPreparedStatementPerConnectionSize: 50</div><div class="line">    #属性类型是字符串，通过别名的方式配置扩展插件，常用的插件有：</div><div class="line">    #监控统计用的filter:stat 日志用的filter:log4j 防御SQL注入的filter:wall</div><div class="line">    filters: stat</div></pre></td></tr></table></figure></p>
+<p>创建<strong>MybatisConfig</strong>，使用注解<strong>@Configuration</strong>、<strong>@EnableTransactionManagement</strong>、<strong>@AutoConfigureAfter({DataConfig.class})</strong>、<strong>@MapperScan(basePackages = {“com.bootcwenao.dbserver.mapper”})</strong></p>
+<blockquote>
+<ul>
+<li>@AutoConfigureAfter ： 表示此项在某项配置完成后在进行configure</li>
+<li>@MapperScan ： 扫描mapper文件</li>
+</ul>
+</blockquote>
+<p><strong>MybatisConfig</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * @author cwenao</div><div class="line"> * @version $Id MybatisConfig.java, v 0.1 2017-01-24 17:38 cwenao Exp $$</div><div class="line"> */</div><div class="line">@Configuration</div><div class="line">@EnableTransactionManagement</div><div class="line">@AutoConfigureAfter(&#123;DataConfig.class&#125;)</div><div class="line">@MapperScan(basePackages = &#123;&quot;com.bootcwenao.dbserver.mapper&quot;&#125;)</div><div class="line">public class MybatisConfig implements EnvironmentAware &#123;</div><div class="line"></div><div class="line">    @Autowired</div><div class="line">    DataSource dataSource;</div><div class="line"></div><div class="line">    private RelaxedPropertyResolver propertyResolver;</div><div class="line"></div><div class="line">    @Bean(name = &quot;sqlSessionFactory&quot;)</div><div class="line">    public SqlSessionFactory sqlSessionFactoryBean() &#123;</div><div class="line">        try &#123;</div><div class="line">            ResourcePatternResolver resourcePatternResolver;</div><div class="line">            resourcePatternResolver = new PathMatchingResourcePatternResolver();</div><div class="line"></div><div class="line">            SqlSessionFactoryBean bean = new SqlSessionFactoryBean();</div><div class="line">            bean.setDataSource(dataSource);</div><div class="line">            bean.setTypeAliasesPackage(propertyResolver.getProperty(&quot;typeAliasesPackage&quot;));</div><div class="line">            bean.setMapperLocations(resourcePatternResolver.getResources(propertyResolver.getProperty(&quot;mapper-locations&quot;)));</div><div class="line">            bean.setConfigLocation(new DefaultResourceLoader().getResource(propertyResolver.getProperty(&quot;configLocation&quot;)));</div><div class="line"></div><div class="line">            return bean.getObject();</div><div class="line"></div><div class="line">        &#125; catch (Exception e) &#123;</div><div class="line">            e.printStackTrace();</div><div class="line">            return null;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    @Bean</div><div class="line">    public PlatformTransactionManager platformTransactionManager() &#123;</div><div class="line">        return new DataSourceTransactionManager(dataSource);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * Set the &#123;@code Environment&#125; that this object runs in.</div><div class="line">     *</div><div class="line">     * @param environment</div><div class="line">     */</div><div class="line">    @Override</div><div class="line">    public void setEnvironment(Environment environment) &#123;</div><div class="line">        this.propertyResolver = new RelaxedPropertyResolver(environment,&quot;mybatis.&quot;);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>配置<strong>mybatis</strong>相关注入信息</p>
+<p><strong>application.yml</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">mybatis:</div><div class="line">  typeAliasesPackage: com.bootcwenao.dbserver.pojo,com.bootcwenao.dbserver.vo</div><div class="line">  mapper-locations: classpath:/com/bootcwenao/dbserver/mapper/*Mapper.xml</div><div class="line">  configLocation: classpath:/config/mybatis-spring.xml</div></pre></td></tr></table></figure>
+<p>创建<strong>mybatis-spring.xml</strong> 用于额外mybatis的信息配置，比如分页</p>
+<p><strong>mybatis-spring.xml</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</div><div class="line">&lt;!DOCTYPE configuration</div><div class="line">        PUBLIC &quot;-//mybatis.org//DTD Config 3.0//EN&quot;</div><div class="line">        &quot;http://mybatis.org/dtd/mybatis-3-config.dtd&quot;&gt;</div><div class="line"></div><div class="line">&lt;configuration&gt;</div><div class="line">    &lt;properties&gt;</div><div class="line">        &lt;property name=&quot;dialect&quot; value=&quot;mysql&quot; /&gt;</div><div class="line">    &lt;/properties&gt;</div><div class="line">    &lt;settings&gt;</div><div class="line">        &lt;!-- 这个配置使全局的映射器启用或禁用缓存。系统默认值是true，设置只是为了展示出来 --&gt;</div><div class="line">        &lt;setting name=&quot;cacheEnabled&quot; value=&quot;true&quot; /&gt;</div><div class="line">        &lt;!-- 全局启用或禁用延迟加载。当禁用时，所有关联对象都会即时加载。 系统默认值是true，设置只是为了展示出来 --&gt;</div><div class="line">        &lt;setting name=&quot;lazyLoadingEnabled&quot; value=&quot;true&quot; /&gt;</div><div class="line">        &lt;!-- 允许或不允许多种结果集从一个单独的语句中返回（需要适合的驱动）。 系统默认值是true，设置只是为了展示出来 --&gt;</div><div class="line">        &lt;setting name=&quot;multipleResultSetsEnabled&quot; value=&quot;true&quot; /&gt;</div><div class="line">        &lt;!--使用列标签代替列名。不同的驱动在这方便表现不同。参考驱动文档或充分测试两种方法来决定所使用的驱动。 系统默认值是true，设置只是为了展示出来 --&gt;</div><div class="line">        &lt;setting name=&quot;useColumnLabel&quot; value=&quot;true&quot; /&gt;</div><div class="line">        &lt;!--允许 JDBC 支持生成的键。需要适合的驱动。如果设置为 true 则这个设置强制生成的键被使用，尽管一些驱动拒绝兼容但仍然有效（比如</div><div class="line">            Derby）。 系统默认值是false，设置只是为了展示出来 --&gt;</div><div class="line">        &lt;setting name=&quot;useGeneratedKeys&quot; value=&quot;false&quot; /&gt;</div><div class="line">        &lt;!--配置默认的执行器。SIMPLE 执行器没有什么特别之处。REUSE 执行器重用预处理语句。BATCH 执行器重用语句和批量更新 系统默认值是SIMPLE，设置只是为了展示出来 --&gt;</div><div class="line">        &lt;setting name=&quot;defaultExecutorType&quot; value=&quot;SIMPLE&quot; /&gt;</div><div class="line">        &lt;!--设置超时时间，它决定驱动等待一个数据库响应的时间。 系统默认值是null，设置只是为了展示出来 --&gt;</div><div class="line">        &lt;setting name=&quot;defaultStatementTimeout&quot; value=&quot;25000&quot; /&gt;</div><div class="line">    &lt;/settings&gt;</div><div class="line">    &lt;!--&lt;plugins&gt;</div><div class="line">        &lt;plugin interceptor=&quot;com.github.pagehelper.PageHelper&quot;&gt;</div><div class="line">            &lt;property name=&quot;dialect&quot; value=&quot;mysql&quot; /&gt;</div><div class="line">            &lt;property name=&quot;offsetAsPageNum&quot; value=&quot;true&quot; /&gt;</div><div class="line">            &lt;property name=&quot;rowBoundsWithCount&quot; value=&quot;true&quot; /&gt;</div><div class="line">            &lt;property name=&quot;pageSizeZero&quot; value=&quot;true&quot; /&gt;</div><div class="line">            &lt;property name=&quot;reasonable&quot; value=&quot;true&quot; /&gt;</div><div class="line">        &lt;/plugin&gt;</div><div class="line">    &lt;/plugins&gt;--&gt;</div><div class="line">&lt;/configuration&gt;</div></pre></td></tr></table></figure></p>
+<p>引入<strong>thymeleaf</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">spring:</div><div class="line">  thymeleaf:</div><div class="line">    cache: false</div><div class="line">    mode: LEGACYHTML5</div><div class="line">    prefix: classpath:/web/</div><div class="line">    suffix: .html</div><div class="line">    content-type: text/html</div></pre></td></tr></table></figure>
+<h2 id="表以及实体类等"><a href="#表以及实体类等" class="headerlink" title="表以及实体类等"></a><strong>表以及实体类等</strong></h2><p>创建表 <strong>account_info</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">SET FOREIGN_KEY_CHECKS=0;</div><div class="line">-- ----------------------------</div><div class="line">-- Table structure for account_info</div><div class="line">-- ----------------------------</div><div class="line">DROP TABLE IF EXISTS `account_info`;</div><div class="line">CREATE TABLE `account_info` (</div><div class="line">  `id` varchar(64) NOT NULL,</div><div class="line">  `account_name` varchar(64) DEFAULT NULL COMMENT &apos;用户名&apos;,</div><div class="line">  `nick_name` varchar(64) DEFAULT NULL COMMENT &apos;昵称&apos;,</div><div class="line">  `mail` varchar(64) DEFAULT NULL COMMENT &apos;邮箱&apos;,</div><div class="line">  `m_tel` varchar(64) DEFAULT NULL COMMENT &apos;移动电话&apos;,</div><div class="line">  `land_tel` varchar(64) DEFAULT NULL COMMENT &apos;固定电话&apos;,</div><div class="line">  `is_vip` int(1) DEFAULT NULL,</div><div class="line">  `password` varchar(128) DEFAULT NULL COMMENT &apos;密码&apos;,</div><div class="line">  `salt` varchar(32) DEFAULT NULL COMMENT &apos;盐值&apos;,</div><div class="line">  `head_image` varchar(258) DEFAULT NULL COMMENT &apos;头像&apos;,</div><div class="line">  `back_image` varchar(258) DEFAULT NULL COMMENT &apos;背景图&apos;,</div><div class="line">  `account_type` int(1) DEFAULT NULL COMMENT &apos;&apos;,</div><div class="line">  `source` int(1) DEFAULT NULL COMMENT ,</div><div class="line">  `audit_status` int(1) DEFAULT NULL,</div><div class="line">  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,</div><div class="line">  `update_time` timestamp NOT NULL DEFAULT &apos;0000-00-00 00:00:00&apos;,</div><div class="line">  `status` int(1) DEFAULT NULL,</div><div class="line">  PRIMARY KEY (`id`)</div><div class="line">) ENGINE=InnoDB DEFAULT CHARSET=utf8;</div></pre></td></tr></table></figure></p>
+<p>根据<strong>account_info表</strong>创建生成 <strong>entity、mapper、*.Mapper.xml、server</strong> 此处略</p>
+<blockquote>
+<ul>
+<li>entity、mapper放置在java下的package</li>
+<li>*.Mapper.xml放置在resources下同mapper的目录结构下</li>
+</ul>
+</blockquote>
+<h2 id="创建-Controller、html页面"><a href="#创建-Controller、html页面" class="headerlink" title="创建 Controller、html页面"></a><strong>创建 Controller、html页面</strong></h2><p><strong>UserInfoController</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * @author cwenao</div><div class="line"> * @version $Id UserInfoController.java, v 0.1 2017-01-25 18:35 cwenao Exp $$</div><div class="line"> */</div><div class="line">@Controller</div><div class="line">public class UserInfoController &#123;</div><div class="line"></div><div class="line">    @Autowired</div><div class="line">    AccountInfoServer accountInfoServerImpl;</div><div class="line"></div><div class="line">    @RequestMapping(&quot;/accountInfo&quot;)</div><div class="line">    public String accountInfo(String name, ModelMap modelMap) &#123;</div><div class="line"></div><div class="line">        List&lt;AccountInfo&gt; accountInfoList = accountInfoServerImpl.selectByName(name);</div><div class="line">        modelMap.addAttribute(&quot;accountList&quot;, accountInfoList);</div><div class="line"></div><div class="line">        return &quot;userinfo/accountInfo&quot;;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>创建 <strong>accountInfo.html</strong>,放置在<strong>userinfo</strong>文件夹下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&lt;!DOCTYPE html&gt;</div><div class="line">&lt;html lang=&quot;en&quot; xmlns:th=&quot;http://www.w3.org/1999/xhtml&quot;&gt;</div><div class="line">&lt;head&gt;</div><div class="line">    &lt;meta charset=&quot;UTF-8&quot;&gt;</div><div class="line">    &lt;title&gt;Title&lt;/title&gt;</div><div class="line">&lt;/head&gt;</div><div class="line">&lt;body &gt;</div><div class="line">    &lt;table&gt;</div><div class="line">        &lt;tr th:each=&quot;accountInfo:$&#123;accountList&#125;&quot;&gt;</div><div class="line">            &lt;td th:text=&quot;$&#123;accountInfo.accountName&#125;&quot;&gt;aabbcc&lt;/td&gt;</div><div class="line">            &lt;td th:text=&quot;$&#123;accountInfo.salt&#125;&quot;&gt;123dds&lt;/td&gt;</div><div class="line">        &lt;/tr&gt;</div><div class="line">    &lt;/table&gt;</div><div class="line">&lt;/body&gt;</div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<h2 id="apigateway中加入dbserver访问"><a href="#apigateway中加入dbserver访问" class="headerlink" title="apigateway中加入dbserver访问"></a><strong>apigateway中加入dbserver访问</strong></h2><p><strong>bootstrap.yml</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">zuul:</div><div class="line">  routes:</div><div class="line">    dbserver:</div><div class="line">      path: /dbserver/**</div><div class="line">      serviceId: DBSERVER</div></pre></td></tr></table></figure></p>
+<h2 id="测试访问"><a href="#测试访问" class="headerlink" title="测试访问"></a><strong>测试访问</strong></h2><blockquote>
+<ul>
+<li>在account_info中加入一条数据</li>
+<li>启动discovery、configserver、apigateway、dbserver</li>
+</ul>
+</blockquote>
+<p>访问地址：<a href="http://localhost:10002/dbserver/accountInfo?name=cwenao" target="_blank" rel="external">http://localhost:10002/dbserver/accountInfo?name=cwenao</a></p>
+<blockquote>
+<ul>
+<li><a href="http://localhost:10002" target="_blank" rel="external">http://localhost:10002</a> 为网关地址</li>
+<li>dbserver为网关zuul 配置path</li>
+<li>accountInfo?name=cwenao 为controller访问地址</li>
+</ul>
+</blockquote>
+<p><img src="http://img.blog.csdn.net/20170129120506720?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="结果"></p>
+<hr>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a><strong>代码</strong></h2><h4 id="代码请移步-Github参考地址"><a href="#代码请移步-Github参考地址" class="headerlink" title="代码请移步 Github参考地址"></a>代码请移步 <a href="https://github.com/cwenao/springboot_cwenao" target="_blank" rel="external">Github参考地址</a></h4><h2 id="如有疑问请加公众号（K171），如果觉得对您有帮助请-github-start"><a href="#如有疑问请加公众号（K171），如果觉得对您有帮助请-github-start" class="headerlink" title="如有疑问请加公众号（K171），如果觉得对您有帮助请 github start"></a>如有疑问请加公众号（K171），如果觉得对您有帮助请 <strong>github start</strong></h2>
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="http://bimg.kakme.com/k171.jpg?imageMogr2/auto-orient/thumbnail/!100p" alt="cwenao wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎关注微信公众号，虽然上面什么都没有！但是可以聊聊天不是么!</div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>一杯咖啡是坚持原创技术分享的动力！对了，别加糖！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://bimg.kakme.com/wex_payee.png?imageMogr2/auto-orient/thumbnail/!30p" alt="cwenao WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://bimg.kakme.com/ali_payee.png?imageMogr2/auto-orient/thumbnail/!30p" alt="cwenao Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    cwenao
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://blog.kakme.com/2017/11/12/springboot-mybatis-druid/" title="Springboot - mybatis-druid：集成mybatis/druid">http://blog.kakme.com/2017/11/12/springboot-mybatis-druid/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Springboot/" rel="tag"># Springboot</a>
+          
+            <a href="/tags/SpringCloud/" rel="tag"># SpringCloud</a>
+          
+            <a href="/tags/mybatis/" rel="tag"># mybatis</a>
+          
+            <a href="/tags/druid/" rel="tag"># druid</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/12/springboot-kafka-demo/" rel="next" title="Springboot - kafka-demo：Kafka Demo">
+                <i class="fa fa-chevron-left"></i> Springboot - kafka-demo：Kafka Demo
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/11/12/springboot-redis-cachemanager/" rel="prev" title="Springboot - redis-cachemanager：集成Redis/CacheManager">
+                Springboot - redis-cachemanager：集成Redis/CacheManager <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://bimg.kakme.com/head_xiaqiu.jpeg"
+               alt="cwenao" />
+          <p class="site-author-name" itemprop="name">cwenao</p>
+           
+              <p class="site-description motion-element" itemprop="description">在生活中写代码，在代码中寻找生活</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/cwenao" target="_blank" title="Github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                    
+                      Github
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前置工作"><span class="nav-number">1.</span> <span class="nav-text">前置工作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#dataSource、Mybatis配置"><span class="nav-number">1.1.</span> <span class="nav-text">dataSource、Mybatis配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#表以及实体类等"><span class="nav-number">1.2.</span> <span class="nav-text">表以及实体类等</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#创建-Controller、html页面"><span class="nav-number">1.3.</span> <span class="nav-text">创建 Controller、html页面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#apigateway中加入dbserver访问"><span class="nav-number">1.4.</span> <span class="nav-text">apigateway中加入dbserver访问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试访问"><span class="nav-number">1.5.</span> <span class="nav-text">测试访问</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码"><span class="nav-number">1.6.</span> <span class="nav-text">代码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#代码请移步-Github参考地址"><span class="nav-number">1.6.0.1.</span> <span class="nav-text">代码请移步 Github参考地址</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如有疑问请加公众号（K171），如果觉得对您有帮助请-github-start"><span class="nav-number">1.7.</span> <span class="nav-text">如有疑问请加公众号（K171），如果觉得对您有帮助请 github start</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">cwenao</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/fastclick/1.0.6/fastclick.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazyload/1.9.3/jquery.lazyload.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.ui.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/fancybox/2.1.5/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Xg8awHRFym68sfMkbJnMXeqI-gzGzoHsz", "RB5bK0wlJXvkBfE41UTedOOT");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+  <link href="//cdn.jsdelivr.net/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="fonts.useso.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+  
+
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Springboot,SpringCloud,Hbase,SpringDataHadoop," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="前置工作  Hadoop安装配置 : hadoop-2.7.3 Hbase安装配置: hbase-1.2.4 zookeeper安装配置: zookeeper-3.4.9 hbase-client中guava版本与SpringDataHadoop(2.4.0.RELEASE)版本中的guava版本问题 Springboot的其他章节，需要了解 Hostname 绑定 hadoop home问题，配">
+<meta name="keywords" content="Springboot,SpringCloud,Hbase,SpringDataHadoop">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Springboot - hbase：集成HBASE&#x2F;基于SpringDataHadoop">
+<meta property="og:url" content="http://blog.kakme.com/2017-11-12-springboot-hbase/index.html">
+<meta property="og:site_name" content="代码间的无聊生活">
+<meta property="og:description" content="前置工作  Hadoop安装配置 : hadoop-2.7.3 Hbase安装配置: hbase-1.2.4 zookeeper安装配置: zookeeper-3.4.9 hbase-client中guava版本与SpringDataHadoop(2.4.0.RELEASE)版本中的guava版本问题 Springboot的其他章节，需要了解 Hostname 绑定 hadoop home问题，配">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://img.blog.csdn.net/20170227133615185?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170227133632591?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-11-12T08:31:32.756Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Springboot - hbase：集成HBASE&#x2F;基于SpringDataHadoop">
+<meta name="twitter:description" content="前置工作  Hadoop安装配置 : hadoop-2.7.3 Hbase安装配置: hbase-1.2.4 zookeeper安装配置: zookeeper-3.4.9 hbase-client中guava版本与SpringDataHadoop(2.4.0.RELEASE)版本中的guava版本问题 Springboot的其他章节，需要了解 Hostname 绑定 hadoop home问题，配">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170227133615185?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.kakme.com/2017-11-12-springboot-hbase/"/>
+
+
+
+
+
+  <title>Springboot - hbase：集成HBASE/基于SpringDataHadoop | 代码间的无聊生活</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <!-- 引入github -->
+    <a href="https://github.com/cwenao">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+    </a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">代码间的无聊生活</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">心见是新</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.kakme.com/2017-11-12-springboot-hbase/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cwenao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://bimg.kakme.com/head_xiaqiu.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="代码间的无聊生活">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Springboot - hbase：集成HBASE/基于SpringDataHadoop</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-12T16:27:16+08:00">
+                2017-11-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Springboot-SpringCloud/" itemprop="url" rel="index">
+                    <span itemprop="name">Springboot/SpringCloud</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017-11-12-springboot-hbase/" class="leancloud_visitors" data-flag-title="Springboot - hbase：集成HBASE/基于SpringDataHadoop">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="前置工作"><a href="#前置工作" class="headerlink" title="前置工作"></a><strong>前置工作</strong></h1><blockquote>
+<ul>
+<li>Hadoop安装配置 : hadoop-2.7.3</li>
+<li>Hbase安装配置: hbase-1.2.4</li>
+<li>zookeeper安装配置: zookeeper-3.4.9</li>
+<li>hbase-client中guava版本与SpringDataHadoop(2.4.0.RELEASE)版本中的guava版本问题</li>
+<li>Springboot的其他章节，<a href="http://blog.csdn.net/cwenao/article/details/54251280" target="_blank" rel="external">需要了解</a></li>
+<li>Hostname 绑定</li>
+<li>hadoop home问题，配置HADOOP_HOME</li>
+<li>测试时程序内指定 hadoop.home.dir：System.setProperty(“hadoop.home.dir”, “D:\\dev_evn\\hadoop-2.7.3”);</li>
+</ul>
+</blockquote>
+<h2 id="Hadoop基础依赖包"><a href="#Hadoop基础依赖包" class="headerlink" title="Hadoop基础依赖包"></a><strong>Hadoop基础依赖包</strong></h2><blockquote>
+<ul>
+<li>因为hbase-client中guava(12.1)版本与SpringDataHadoop版本中的guava(18.0)版本冲突<br>所以做了依赖基础包，目前可用；思路来自于<a href="https://www.elastic.co/blog/to-shade-or-not-to-shade" target="_blank" rel="external">ElasticSearch官方解决方案</a></li>
+</ul>
+</blockquote>
+<h3 id="创建hadoop-base-bootcwenao-moudle"><a href="#创建hadoop-base-bootcwenao-moudle" class="headerlink" title="创建hadoop-base-bootcwenao moudle"></a><strong>创建hadoop-base-bootcwenao moudle</strong></h3><p>引入相关依赖</p>
+<p><strong>build.gradle</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div></pre></td><td class="code"><pre><div class="line">apply plugin: &apos;org.springframework.boot&apos;</div><div class="line"></div><div class="line">dependencyManagement &#123;</div><div class="line">    imports &#123;</div><div class="line">        mavenBom &quot;org.springframework.cloud:spring-cloud-dependencies:&quot; + springCloudVersion</div><div class="line">        mavenBom &quot;org.springframework.boot:spring-boot-starter:&quot;+ springBootVersion</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">repositories &#123;</div><div class="line">    mavenCentral()</div><div class="line">&#125;</div><div class="line"></div><div class="line">dependencies &#123;</div><div class="line">    compile (&apos;org.springframework.data:spring-data-hadoop:&apos;+ springDataHadoopVersion)</div><div class="line">    compile (&apos;org.apache.hadoop:hadoop-common:&apos;+hadoopVersion)</div><div class="line">&#125;</div><div class="line">configurations &#123;</div><div class="line">    all*.exclude module: &apos;spring-boot-starter-logging&apos;</div><div class="line">    all*.exclude module: &apos;logback-classic&apos;</div><div class="line">    all*.exclude module: &apos;log4j-over-slf4j&apos;</div><div class="line">    all*.exclude module: &apos;slf4j-log4j12&apos;</div><div class="line">    all*.exclude module: &apos;snappy-java&apos;</div><div class="line">&#125;</div><div class="line">jar &#123;</div><div class="line">    baseName = &apos;hadoop-base-bootcwenao&apos;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><strong>创建main入口（很重要）</strong></p>
+<p><strong>HadoopBaseApplication.java</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * @author cwenao</div><div class="line"> * @version $Id HadoopBaseApplication.java, v 0.1 2017-02-23 13:51 cwenao Exp $$</div><div class="line"> */</div><div class="line">public class HadoopBaseApplication &#123;</div><div class="line">    public static void main(String[] args) &#123;</div><div class="line"></div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="创建-BigData-module"><a href="#创建-BigData-module" class="headerlink" title="创建 BigData module"></a><strong>创建 BigData module</strong></h3><p>引入<strong>hbase-client</strong>，排除<strong>servlet-api、guava:18.0</strong>，引入hadoop基础依赖包<strong>hadoop-base-bootcwenao</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div></pre></td><td class="code"><pre><div class="line">dependencies &#123;</div><div class="line"></div><div class="line">    compile project(&apos;:hadoop-base-bootcwenao&apos;)</div><div class="line"></div><div class="line">    compile (&apos;org.springframework.data:spring-data-redis&apos;)</div><div class="line"></div><div class="line">    compile (&apos;org.springframework.boot:spring-boot-starter-data-mongodb:&apos;+springBootVersion)</div><div class="line">    compile (&apos;org.apache.hbase:hbase-client:&apos;+hbaseClientVersion)</div><div class="line">    compile (&apos;org.springframework.boot:spring-boot-starter-web:&apos;+springBootVersion)</div><div class="line">    compile(&apos;org.springframework.cloud:spring-cloud-starter-eureka&apos;)</div><div class="line">    compile (&apos;mysql:mysql-connector-java:&apos;+mysqlVersion)</div><div class="line">    compile (&apos;com.alibaba:druid:&apos;+druidVersion)</div><div class="line">    compile (&apos;org.mybatis:mybatis-spring:&apos;+mybatisSpringBootVersion)</div><div class="line">    compile (&apos;org.mybatis:mybatis:&apos;+mybatisVersion)</div><div class="line">    compile(&apos;org.springframework.boot:spring-boot-starter-log4j2&apos;)</div><div class="line">    compile (&apos;org.springframework.boot:spring-boot-starter-thymeleaf&apos;)</div><div class="line">    compile (&apos;net.sourceforge.nekohtml:nekohtml:&apos;+nekoHtmlVersion)</div><div class="line">    compile(&apos;org.apache.logging.log4j:log4j-1.2-api:&apos;+ log4jAPIVersion)</div><div class="line">    /*compile(&apos;org.springframework.boot:spring-boot-starter-jdbc&apos;)*/</div><div class="line">    compile(&apos;org.springframework.boot:spring-boot-starter-aop&apos;)</div><div class="line">    compile (&apos;com.alibaba:fastjson:&apos;+fastjsonVersion)</div><div class="line">    compile (&apos;redis.clients:jedis&apos;)</div><div class="line">    compile (&apos;com.google.guava:guava:12.0.1&apos;)</div><div class="line"></div><div class="line">    testCompile (&apos;org.springframework.boot:spring-boot-starter-test&apos;)</div><div class="line">    testCompile group: &apos;junit&apos;, name: &apos;junit&apos;, version: &apos;4.11&apos;</div><div class="line">&#125;</div><div class="line"></div><div class="line"></div><div class="line">configurations &#123;</div><div class="line">    all*.exclude module: &apos;spring-boot-starter-logging&apos;</div><div class="line">    all*.exclude module: &apos;servlet-api&apos;</div><div class="line">    all*.exclude group: &apos;com.google.guava&apos;, module: &apos;guava:18.0&apos;</div><div class="line">    all*.exclude module: &apos;logback-classic&apos;</div><div class="line">    all*.exclude module: &apos;log4j-over-slf4j&apos;</div><div class="line">    all*.exclude module: &apos;slf4j-log4j12&apos;</div><div class="line">    all*.exclude module: &apos;snappy-java&apos;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>创建hbase资源文件<strong>hbase.properties</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hbase.zk.host=127.0.0.1</div><div class="line">hbase.zk.port=2181</div></pre></td></tr></table></figure></p>
+<p>创建<strong>hbase-spring.xml</strong>文件</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</div><div class="line">&lt;beans xmlns=&quot;http://www.springframework.org/schema/beans&quot;</div><div class="line">       xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</div><div class="line">       xmlns:context=&quot;http://www.springframework.org/schema/context&quot;</div><div class="line">       xmlns:hdp=&quot;http://www.springframework.org/schema/hadoop&quot;</div><div class="line">       xmlns:p=&quot;http://www.springframework.org/schema/p&quot;</div><div class="line">       xsi:schemaLocation=&quot;http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd</div><div class="line">	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd</div><div class="line">	http://www.springframework.org/schema/hadoop http://www.springframework.org/schema/hadoop/spring-hadoop.xsd&quot;&gt;</div><div class="line"></div><div class="line">    &lt;context:property-placeholder location=&quot;classpath:/config/hbase.properties&quot;/&gt;</div><div class="line"></div><div class="line">    &lt;hdp:configuration id=&quot;hadoopConfiguration&quot;&gt;</div><div class="line">        fs.defaultFS=hdfs://127.0.0.112:9000</div><div class="line">    &lt;/hdp:configuration&gt;</div><div class="line"></div><div class="line">    &lt;hdp:hbase-configuration configuration-ref=&quot;hadoopConfiguration&quot; zk-quorum=&quot;$&#123;hbase.zk.host&#125;&quot; zk-port=&quot;$&#123;hbase.zk.port&#125;&quot; delete-connection=&quot;true&quot;/&gt;</div><div class="line"></div><div class="line">    &lt;bean id=&quot;hbaseTemplate&quot; class=&quot;org.springframework.data.hadoop.hbase.HbaseTemplate&quot;&gt;</div><div class="line">        &lt;property name=&quot;configuration&quot; ref=&quot;hbaseConfiguration&quot;/&gt;</div><div class="line">    &lt;/bean&gt;</div><div class="line"></div><div class="line">&lt;/beans&gt;</div></pre></td></tr></table></figure>
+<p>使用@ImportResource导入xml</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * @author cwenao</div><div class="line"> * @version $Id BigDataApplication.java, v 0.1 2017-02-21 22:38 cwenao Exp $$</div><div class="line"> */</div><div class="line">@SpringBootApplication</div><div class="line">@EnableDiscoveryClient</div><div class="line">@ImportResource(locations = &#123;&quot;classpath:/config/hbase-spring.xml&quot;&#125;)</div><div class="line">public class BigDataApplication &#123;</div><div class="line">    public static void main(String[] args) &#123;</div><div class="line">        System.setProperty(&quot;hadoop.home.dir&quot;, &quot;D:\\\\dev_evn\\\\hadoop-2.7.3&quot;);</div><div class="line">        SpringApplication.run(BigDataApplication.class, args);</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>配置 mongodb、thymeleaf、redis、eureka等</p>
+<p><strong>application.yml</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div></pre></td><td class="code"><pre><div class="line">server:</div><div class="line">  port: 8686</div><div class="line">eureka:</div><div class="line">  instance:</div><div class="line">    hostname: bigdataserver</div><div class="line">    prefer-ip-address: true</div><div class="line">  client:</div><div class="line">    registerWithEureka: true</div><div class="line">    fetchRegistry: true</div><div class="line">    service-url:</div><div class="line">      defaultZone: http://aa:abcd@localhost:8761/eureka/</div><div class="line">spring:</div><div class="line">  thymeleaf:</div><div class="line">    cache: false</div><div class="line">    mode: LEGACYHTML5</div><div class="line">    prefix: classpath:/web/</div><div class="line">    suffix: .html</div><div class="line">    content-type: text/html</div><div class="line">  redis:</div><div class="line">    host: 127.0.0.1</div><div class="line">    port: 6379</div><div class="line">    password: password</div><div class="line">    timeout: 5000</div><div class="line">    pool:</div><div class="line">      max-idle: 8</div><div class="line">      min-idle: 0</div><div class="line">      max-active: 8</div><div class="line">      max-wait: -1</div><div class="line">  data:</div><div class="line">    mongodb:</div><div class="line">      uri: mongodb://username:password@127.0.0.1:27017/kakme:27017/kakme</div></pre></td></tr></table></figure>
+<p><strong>bootstrap.yml</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">spring:</div><div class="line">  application:</div><div class="line">    name: bigdataserver</div><div class="line">  aop:</div><div class="line">    auto: true</div><div class="line">  cloud:</div><div class="line">    stream:</div><div class="line">      kafka:</div><div class="line">        binder:</div><div class="line">          brokers: 127.0.0.1:9092</div><div class="line">          zk-nodes: 127.0.0.1:2181</div><div class="line">logging:</div><div class="line">  config: classpath:log4j2-spring.xml</div></pre></td></tr></table></figure>
+<p><strong>配置Hostname（重要）</strong></p>
+<blockquote>
+<ul>
+<li>hbase需要zk，而zk在在hbase服务端返回的时候返回的是hostname</li>
+<li>所以需要将服务端的hostname，在本地也进行一次绑定</li>
+<li>windowns下hosts中配置：    xxx.xx.xx.xxx master， <strong>xxx.xx.xx.xxx为服务器端地址</strong></li>
+</ul>
+</blockquote>
+<h3 id="创建查询方法"><a href="#创建查询方法" class="headerlink" title="创建查询方法"></a><strong>创建查询方法</strong></h3><blockquote>
+<ul>
+<li>如果只是测试或者不嫌麻烦可以用hbaseTemplate一个个写</li>
+<li>比较懒所以扩展了下，思想来自于网络大神</li>
+</ul>
+</blockquote>
+<p>创建<strong>HbaseFindBuilder.java</strong></p>
+<p><strong>HbaseFindBuilder.java</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div><div class="line">117</div><div class="line">118</div><div class="line">119</div><div class="line">120</div><div class="line">121</div><div class="line">122</div><div class="line">123</div><div class="line">124</div><div class="line">125</div><div class="line">126</div><div class="line">127</div><div class="line">128</div><div class="line">129</div><div class="line">130</div><div class="line">131</div><div class="line">132</div><div class="line">133</div><div class="line">134</div><div class="line">135</div><div class="line">136</div><div class="line">137</div><div class="line">138</div><div class="line">139</div><div class="line">140</div><div class="line">141</div><div class="line">142</div><div class="line">143</div><div class="line">144</div><div class="line">145</div><div class="line">146</div><div class="line">147</div><div class="line">148</div><div class="line">149</div><div class="line">150</div><div class="line">151</div><div class="line">152</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Company</div><div class="line"> * Copyright (C) 2014-2017 All Rights Reserved.</div><div class="line"> */</div><div class="line">package com.bootcwenao.bigdataserver.hbase.handler;</div><div class="line"></div><div class="line">import com.bootcwenao.bigdataserver.utils.HumpNameOrMethodUtils;</div><div class="line">import org.apache.hadoop.hbase.client.Result;</div><div class="line">import org.apache.hadoop.hbase.util.Bytes;</div><div class="line">import org.springframework.beans.BeanUtils;</div><div class="line">import org.springframework.beans.BeanWrapper;</div><div class="line">import org.springframework.beans.PropertyAccessorFactory;</div><div class="line">import org.springframework.util.CollectionUtils;</div><div class="line">import org.springframework.util.StringUtils;</div><div class="line"></div><div class="line">import java.beans.PropertyDescriptor;</div><div class="line">import java.util.HashMap;</div><div class="line">import java.util.HashSet;</div><div class="line">import java.util.Map;</div><div class="line">import java.util.Set;</div><div class="line"></div><div class="line">/**</div><div class="line"> * 按qualifier返回结果</div><div class="line"> * @author cwenao</div><div class="line"> * @version $Id HbaseFindBuilder.java, v 0.1 2017-02-20 16:05 cwenao Exp $$</div><div class="line"> */</div><div class="line">public class HbaseFindBuilder&lt;T&gt; &#123;</div><div class="line"></div><div class="line">    private String family;</div><div class="line"></div><div class="line">    private Result result;</div><div class="line"></div><div class="line">    private String qualifier;</div><div class="line"></div><div class="line">    private Map&lt;String, PropertyDescriptor&gt; fieldsMap;</div><div class="line"></div><div class="line">    private Set&lt;String&gt; propertiesSet;</div><div class="line"></div><div class="line">    private Set&lt;String&gt; qualifierSet;</div><div class="line"></div><div class="line">    private BeanWrapper beanWrapper;</div><div class="line"></div><div class="line">    private T tBean;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 按family查询</div><div class="line">     * @param family</div><div class="line">     * @param result</div><div class="line">     * @param tclazz</div><div class="line">     */</div><div class="line">    public HbaseFindBuilder(String family, Result result, Class&lt;T&gt; tclazz) &#123;</div><div class="line"></div><div class="line">        this.family = family;</div><div class="line">        this.result = result;</div><div class="line">        fieldsMap = new HashMap();</div><div class="line">        propertiesSet = new HashSet&lt;&gt;();</div><div class="line"></div><div class="line">        reflectBean(tclazz);</div><div class="line"></div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * return the result by qulifier</div><div class="line">     * @param qualifier</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public HbaseFindBuilder build(String qualifier) &#123;</div><div class="line"></div><div class="line">        return this.build(qualifier,&quot;&quot;);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * by multiple qualifier</div><div class="line">     * @param qualifiers</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public HbaseFindBuilder build(String... qualifiers) &#123;</div><div class="line"></div><div class="line">        if (qualifiers == null || qualifiers.length == 0) &#123;</div><div class="line">            return this;</div><div class="line">        &#125;</div><div class="line">        PropertyDescriptor p = null;</div><div class="line">        byte[] qualifierByte = null;</div><div class="line"></div><div class="line">        for (String qualifier : qualifiers) &#123;</div><div class="line">            if (StringUtils.isEmpty(qualifier)) &#123;</div><div class="line">                continue;</div><div class="line">            &#125;</div><div class="line">            p = fieldsMap.get(qualifier.trim());</div><div class="line">            qualifierByte = result.getValue(family.getBytes(), HumpNameOrMethodUtils.humpEntityForVar(qualifier).getBytes());</div><div class="line">            if (qualifierByte != null &amp;&amp; qualifierByte.length &gt; 0) &#123;</div><div class="line">                beanWrapper.setPropertyValue(p.getName(),Bytes.toString(qualifierByte));</div><div class="line">                propertiesSet.add(p.getName());</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * by map</div><div class="line">     * @param map</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public HbaseFindBuilder build(Map&lt;String,String&gt; map) &#123;</div><div class="line"></div><div class="line">        if (map == null || map.size() &lt;= 0) &#123;</div><div class="line">            return this;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        PropertyDescriptor p = null;</div><div class="line">        byte[] qualifierByte = null;</div><div class="line"></div><div class="line">        for (String value : map.values()) &#123;</div><div class="line">            if (StringUtils.isEmpty(value)) &#123;</div><div class="line">                continue;</div><div class="line">            &#125;</div><div class="line"></div><div class="line">            p = fieldsMap.get(value.trim());</div><div class="line">            qualifierByte = result.getValue(family.getBytes(), HumpNameOrMethodUtils.humpEntityForVar(value).getBytes());</div><div class="line"></div><div class="line">            if (qualifierByte != null &amp;&amp; qualifierByte.length &gt; 0) &#123;</div><div class="line">                beanWrapper.setPropertyValue(p.getName(), Bytes.toString(qualifierByte));</div><div class="line">                propertiesSet.add(p.getName());</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        return this;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    private void reflectBean(Class&lt;T&gt; tclazz) &#123;</div><div class="line"></div><div class="line">        tBean = BeanUtils.instantiate(tclazz);</div><div class="line"></div><div class="line">        PropertyDescriptor[] propertyDescriptors = BeanUtils.getPropertyDescriptors(tclazz);</div><div class="line"></div><div class="line">        for (PropertyDescriptor p : propertyDescriptors) &#123;</div><div class="line">            if (p.getWriteMethod() != null) &#123;</div><div class="line">                this.fieldsMap.put(p.getName(), p);</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(tBean);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    public T fetch() &#123;</div><div class="line">        if (!CollectionUtils.isEmpty(propertiesSet)) &#123;</div><div class="line">            return this.tBean;</div><div class="line">        &#125;</div><div class="line">        return null;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>创建 Bean对应 family</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">public class UserInfo &#123;</div><div class="line"></div><div class="line">    private String id;</div><div class="line"></div><div class="line">    private String userName;</div><div class="line"></div><div class="line">    private Integer age;</div><div class="line">	//setter getter ......</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>创建<strong>bean中属性对应 qualifier转换 驼峰命名，hbase中table需要严格按要求</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div><div class="line">94</div><div class="line">95</div><div class="line">96</div><div class="line">97</div><div class="line">98</div><div class="line">99</div><div class="line">100</div><div class="line">101</div><div class="line">102</div><div class="line">103</div><div class="line">104</div><div class="line">105</div><div class="line">106</div><div class="line">107</div><div class="line">108</div><div class="line">109</div><div class="line">110</div><div class="line">111</div><div class="line">112</div><div class="line">113</div><div class="line">114</div><div class="line">115</div><div class="line">116</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * Company</div><div class="line"> * Copyright (C) 2014-2017 All Rights Reserved.</div><div class="line"> */</div><div class="line">package com.bootcwenao.bigdataserver.utils;</div><div class="line"></div><div class="line">import org.springframework.util.StringUtils;</div><div class="line"></div><div class="line">import java.util.Arrays;</div><div class="line">import java.util.List;</div><div class="line">import java.util.Locale;</div><div class="line"></div><div class="line">/**</div><div class="line"> * Transform the entity attribute hbase column attribute</div><div class="line"> * @author cwenao</div><div class="line"> * @version $Id HumpNameOrMethodUtils.java, v 0.1 2017-02-20 16:27 cwenao Exp $$</div><div class="line"> */</div><div class="line">public class HumpNameOrMethodUtils &#123;</div><div class="line"></div><div class="line">    private final static String SEPARATOR_UNDER_SCORE = &quot;_&quot;;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 用驼峰命名法 将参数转换为Entity属性</div><div class="line">     * @param var</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public static String humpVarForEntity(String var) &#123;</div><div class="line"></div><div class="line">        if (StringUtils.isEmpty(var)) &#123;</div><div class="line">            return &quot;&quot;;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        StringBuffer varBf = new StringBuffer();</div><div class="line"></div><div class="line">        var = var.replaceFirst(var.substring(0,1),var.substring(0,1).toLowerCase(Locale.US));</div><div class="line"></div><div class="line">        if (var.indexOf(SEPARATOR_UNDER_SCORE) &gt; 0) &#123;</div><div class="line"></div><div class="line">            String[] underStr = var.split(SEPARATOR_UNDER_SCORE);</div><div class="line"></div><div class="line">            for(int i =0; i&lt;underStr.length;i++) &#123;</div><div class="line"></div><div class="line">                if (i == 0) &#123;</div><div class="line">                    varBf.append(underStr[i]);</div><div class="line">                &#125; else &#123;</div><div class="line">                    varBf.append(str2LowerCase(underStr[i]));</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        return varBf.toString();</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 用驼峰命名法 将Entity属性转换为参数</div><div class="line">     * @param var</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    public static String humpEntityForVar(String var) &#123;</div><div class="line"></div><div class="line">        if (StringUtils.isEmpty(var)) &#123;</div><div class="line">            return &quot;&quot;;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        StringBuffer varBf = new StringBuffer();</div><div class="line"></div><div class="line">        char[] varChar = var.toCharArray();</div><div class="line"></div><div class="line">        int i = 0;</div><div class="line">        for(char c : varChar) &#123;</div><div class="line"></div><div class="line">            if (i==0) &#123;</div><div class="line">                varBf.append(String.valueOf(c));</div><div class="line">            &#125; else &#123;</div><div class="line">                if (compareToLowerCase(String.valueOf(c))) &#123;</div><div class="line">                    varBf.append(&quot;_&quot; + String.valueOf(c).toLowerCase());</div><div class="line">                &#125; else &#123;</div><div class="line">                    varBf.append(String.valueOf(c));</div><div class="line">                &#125;</div><div class="line">            &#125;</div><div class="line">            i++;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        return varBf.toString();</div><div class="line">    &#125;</div><div class="line"></div><div class="line"></div><div class="line">    /**</div><div class="line">     * 将首位字符转换为大写</div><div class="line">     * @param str</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    private static String str2LowerCase(String str) &#123;</div><div class="line">        if (StringUtils.isEmpty(str)) &#123;</div><div class="line">            return &quot;&quot;;</div><div class="line">        &#125;</div><div class="line">        return str.replaceFirst(str.substring(0, 1), str.substring(0, 1).toUpperCase());</div><div class="line">    &#125;</div><div class="line"></div><div class="line">    /**</div><div class="line">     * 是否大写字母</div><div class="line">     * @param source</div><div class="line">     * @return</div><div class="line">     */</div><div class="line">    private static Boolean compareToLowerCase(String source) &#123;</div><div class="line"></div><div class="line">        if (StringUtils.isEmpty(source)) &#123;</div><div class="line">            return false;</div><div class="line">        &#125;</div><div class="line"></div><div class="line">        if (!source.equals(source.toLowerCase(Locale.US))) &#123;</div><div class="line">            return true;</div><div class="line">        &#125;</div><div class="line">        return false;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="调用HbaseFindBuilder"><a href="#调用HbaseFindBuilder" class="headerlink" title="调用HbaseFindBuilder"></a><strong>调用HbaseFindBuilder</strong></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * @author cwenao</div><div class="line"> * @version $Id HbaseAccountInfoMapperImpl.java, v 0.1 2017-02-21 21:14 cwenao Exp $$</div><div class="line"> */</div><div class="line">@Repository(&quot;hbaseAccountInfoMapperImpl&quot;)</div><div class="line">public class HbaseAccountInfoMapperImpl implements HbaseAccountInfoMapper &#123;</div><div class="line"></div><div class="line"> @Autowired</div><div class="line">    private HbaseTemplate hbaseTemplate;</div><div class="line"></div><div class="line">    public UserInfo findUserInfoByEntity(String table, String family, String rowKey, UserInfo userInfo) &#123;</div><div class="line"></div><div class="line">        return (UserInfo) hbaseTemplate.get(table, rowKey, family,</div><div class="line">                (result, rowNum) -&gt; new HbaseFindBuilder&lt;&gt;(family, result, userInfo.getClass()).build(&quot;userName&quot;,&quot;age&quot;,&quot;id&quot;).fetch());</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<h3 id="服务端插入数据"><a href="#服务端插入数据" class="headerlink" title="服务端插入数据"></a><strong>服务端插入数据</strong></h3><blockquote>
+<ul>
+<li>使用hbase shell启用shell操作</li>
+<li>使用put插入数据<blockquote>
+<ul>
+<li>创建表(‘user’)以及family(‘info’) ： create ‘user’,’info’</li>
+<li>插入列数据： put ‘user’,’1’,’info:user_name’,’cwenao’<blockquote>
+<ul>
+<li>‘1’: rowkey; ‘info:user_name’:表示创建family中的col user_name; ‘cwenao’: user_name 的值</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<p><img src="http://img.blog.csdn.net/20170227133615185?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+<h3 id="创建controller"><a href="#创建controller" class="headerlink" title="创建controller"></a><strong>创建controller</strong></h3><p><strong>HbaseAccountController.java</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * @author cwenao</div><div class="line"> * @version $Id HbaseAccountController.java, v 0.1 2017-02-21 22:20 cwenao Exp $$</div><div class="line"> */</div><div class="line">@Controller</div><div class="line">public class HbaseAccountController &#123;</div><div class="line"></div><div class="line">    private final static String TABLE_NAME = &quot;user&quot;;</div><div class="line"></div><div class="line">    private final static String FAMILY_INFO = &quot;info&quot;;</div><div class="line"></div><div class="line">    @Autowired</div><div class="line">    private HbaseAccountInfoService hbaseAccountInfoServiceImpl;</div><div class="line">    @RequestMapping(value = &quot;/bigdata/find&quot;)</div><div class="line">    public String findUserInfoByName(String name, ModelMap modelMap) &#123;</div><div class="line">        UserInfo userInfo = hbaseAccountInfoServiceImpl.findUserInfoByEntity(TABLE_NAME, FAMILY_INFO,</div><div class="line">                &quot;1&quot;, new UserInfo());</div><div class="line"></div><div class="line">        modelMap.addAttribute(&quot;userInfo&quot;, userInfo);</div><div class="line"></div><div class="line">        return &quot;hbase/hbasetest&quot;;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p> <strong>在hbase文件夹下创建hbasetest.html</strong><br><strong>hbasetest.html</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line">&lt;!DOCTYPE html&gt;</div><div class="line">&lt;html lang=&quot;en&quot; xmlns:th=&quot;http://www.w3.org/1999/xhtml&quot;&gt;</div><div class="line">&lt;head&gt;</div><div class="line">    &lt;meta charset=&quot;UTF-8&quot;&gt;</div><div class="line">    &lt;title&gt;Hbase Test&lt;/title&gt;</div><div class="line">&lt;/head&gt;</div><div class="line">&lt;body&gt;</div><div class="line">&lt;table&gt;</div><div class="line">    &lt;tr&gt;&lt;td th:text=&quot;UserInfo&quot;&gt;&lt;/td&gt;&lt;/tr&gt;</div><div class="line">    &lt;tr &gt;</div><div class="line">        &lt;td th:text=&quot;$&#123;userInfo.id&#125;&quot;&gt;aabbcc&lt;/td&gt;</div><div class="line">    &lt;/tr&gt;</div><div class="line">    &lt;tr&gt;</div><div class="line">       &lt;td  th:text=&quot;$&#123;userInfo.userName&#125;&quot;&gt;123dds&lt;/td&gt;</div><div class="line">    &lt;/tr&gt;</div><div class="line">    &lt;tr&gt;</div><div class="line">        &lt;td th:text=&quot;$&#123;userInfo.age&#125;&quot;&gt;123dds&lt;/td&gt;</div><div class="line">    &lt;/tr&gt;</div><div class="line">&lt;/table&gt;</div><div class="line">&lt;/body&gt;</div><div class="line">&lt;/html&gt;</div></pre></td></tr></table></figure>
+<h3 id="配置apigateway"><a href="#配置apigateway" class="headerlink" title="配置apigateway"></a><strong>配置apigateway</strong></h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">bigdataserver:</div><div class="line">      path: /bigdataserver/**</div><div class="line">      serviceId: BIGDATASERVER</div></pre></td></tr></table></figure>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a><strong>测试</strong></h2><blockquote>
+<ul>
+<li>依次启动 discovery、configserver、apigateway、bigdataserver</li>
+<li><a href="http://blog.csdn.net/cwenao/article/details/54251280" target="_blank" rel="external">如果需要参考，请点这里</a></li>
+</ul>
+</blockquote>
+<p>访问 <a href="http://localhost:10002/bigdataserver/bigdata/find?name=%22aaa%22" target="_blank" rel="external">http://localhost:10002/bigdataserver/bigdata/find?name=%22aaa%22</a></p>
+<p><img src="http://img.blog.csdn.net/20170227133632591?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="这里写图片描述"></p>
+<h2 id="错误以及可能"><a href="#错误以及可能" class="headerlink" title="错误以及可能"></a><strong>错误以及可能</strong></h2><blockquote>
+<ul>
+<li>需要排除 servlet-api，不然启动都是问题</li>
+<li>guava版本冲突，guava版本冲突主要是因为12.x与18.0 API不兼容</li>
+<li>zk的hostname绑定： 主要是因为下发的是hostname</li>
+<li>奇葩问题主要是这几个引起的</li>
+<li>实在不行关闭一些日志再查找问题</li>
+<li>winutils.exe问题请下载hadoop-xxx.tar.gz并解压，HADOOP_HOME以及path</li>
+</ul>
+</blockquote>
+<p>如关闭确定不会引起错误的日志<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&lt;loggers&gt;</div><div class="line">      &lt;root level=&quot;DEBUG&quot;&gt;</div><div class="line">          &lt;appenderref ref=&quot;CONSOLE&quot; /&gt;</div><div class="line">      &lt;/root&gt;</div><div class="line">      &lt;logger name=&quot;com.netflix.discovery&quot; level=&quot;ERROR&quot;/&gt;</div><div class="line">      &lt;logger name=&quot;org.apache.http&quot; level=&quot;ERROR&quot;/&gt;</div><div class="line">      &lt;logger name=&quot;org.mongodb.driver.cluster&quot; level=&quot;ERROR&quot;/&gt;</div><div class="line">  &lt;/loggers&gt;</div></pre></td></tr></table></figure></p>
+<hr>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a><strong>代码</strong></h2><h4 id="代码请移步-Github参考地址"><a href="#代码请移步-Github参考地址" class="headerlink" title="代码请移步 Github参考地址"></a>代码请移步 <a href="https://github.com/cwenao/springboot_cwenao" target="_blank" rel="external">Github参考地址</a></h4><h2 id="如有疑问请加公众号（K171），如果觉得对您有帮助请-github-start"><a href="#如有疑问请加公众号（K171），如果觉得对您有帮助请-github-start" class="headerlink" title="如有疑问请加公众号（K171），如果觉得对您有帮助请 github start"></a>如有疑问请加公众号（K171），如果觉得对您有帮助请 <strong>github start</strong></h2>
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="http://bimg.kakme.com/k171.jpg?imageMogr2/auto-orient/thumbnail/!100p" alt="cwenao wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎关注微信公众号，虽然上面什么都没有！但是可以聊聊天不是么!</div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>一杯咖啡是坚持原创技术分享的动力！对了，别加糖！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://bimg.kakme.com/wex_payee.png?imageMogr2/auto-orient/thumbnail/!30p" alt="cwenao WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://bimg.kakme.com/ali_payee.png?imageMogr2/auto-orient/thumbnail/!30p" alt="cwenao Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    cwenao
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://blog.kakme.com/2017-11-12-springboot-hbase/" title="Springboot - hbase：集成HBASE/基于SpringDataHadoop">http://blog.kakme.com/2017-11-12-springboot-hbase/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Springboot/" rel="tag"><i class="fa fa-tag"></i> Springboot</a>
+          
+            <a href="/tags/SpringCloud/" rel="tag"><i class="fa fa-tag"></i> SpringCloud</a>
+          
+            <a href="/tags/Hbase/" rel="tag"><i class="fa fa-tag"></i> Hbase</a>
+          
+            <a href="/tags/SpringDataHadoop/" rel="tag"><i class="fa fa-tag"></i> SpringDataHadoop</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017-11-12-springboot-elasticsearch-mysql/" rel="next" title="Springboot - elasticsearch-mysql：ES从mysql中获取数据/Elasticsearch-jdbc">
+                <i class="fa fa-chevron-left"></i> Springboot - elasticsearch-mysql：ES从mysql中获取数据/Elasticsearch-jdbc
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017-11-12-basic-knowledage-transaction/" rel="prev" title="basic-knowledage - transaction： 事物隔离级别以及事物传播属性">
+                basic-knowledage - transaction： 事物隔离级别以及事物传播属性 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://bimg.kakme.com/head_xiaqiu.jpeg"
+               alt="cwenao" />
+          <p class="site-author-name" itemprop="name">cwenao</p>
+           
+              <p class="site-description motion-element" itemprop="description">在生活中写代码，在代码中寻找生活</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/cwenao" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/cwenao" target="_blank" title="csdn">
+                  
+                    <i class="fa fa-fw fa-spinner"></i>
+                  
+                    
+                      csdn
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/u/cec2e8665f7b" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#前置工作"><span class="nav-number">1.</span> <span class="nav-text">前置工作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Hadoop基础依赖包"><span class="nav-number">1.1.</span> <span class="nav-text">Hadoop基础依赖包</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建hadoop-base-bootcwenao-moudle"><span class="nav-number">1.1.1.</span> <span class="nav-text">创建hadoop-base-bootcwenao moudle</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建-BigData-module"><span class="nav-number">1.1.2.</span> <span class="nav-text">创建 BigData module</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建查询方法"><span class="nav-number">1.1.3.</span> <span class="nav-text">创建查询方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#调用HbaseFindBuilder"><span class="nav-number">1.1.4.</span> <span class="nav-text">调用HbaseFindBuilder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务端插入数据"><span class="nav-number">1.1.5.</span> <span class="nav-text">服务端插入数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建controller"><span class="nav-number">1.1.6.</span> <span class="nav-text">创建controller</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置apigateway"><span class="nav-number">1.1.7.</span> <span class="nav-text">配置apigateway</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试"><span class="nav-number">1.2.</span> <span class="nav-text">测试</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#错误以及可能"><span class="nav-number">1.3.</span> <span class="nav-text">错误以及可能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码"><span class="nav-number">1.4.</span> <span class="nav-text">代码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#代码请移步-Github参考地址"><span class="nav-number">1.4.0.1.</span> <span class="nav-text">代码请移步 Github参考地址</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如有疑问请加公众号（K171），如果觉得对您有帮助请-github-start"><span class="nav-number">1.5.</span> <span class="nav-text">如有疑问请加公众号（K171），如果觉得对您有帮助请 github start</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">cwenao</span>
+</div>
+
+
+<div class="powered-by">
+  <i class="fa fa-user-md">
+    <span id="busuanzi_container_site_pv">
+      总访问量<span id="busuanzi_value_site_pv"></span>次
+    </span>
+  </i>
+</div>
+<!--<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>-->
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/fastclick/1.0.6/fastclick.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazyload/1.9.3/jquery.lazyload.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.ui.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/fancybox/2.1.5/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Xg8awHRFym68sfMkbJnMXeqI-gzGzoHsz", "RB5bK0wlJXvkBfE41UTedOOT");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

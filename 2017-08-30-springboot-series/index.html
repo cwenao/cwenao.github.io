@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+  <link href="//cdn.jsdelivr.net/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="fonts.useso.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+  
+
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Springboot,SpringCloud," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="絮絮叨叨  2015年12月准备开始写博客，写下3篇spring batch后就没再写；一则工作忙，再则一直在以新的姿势学习。  最近还是准备将自己学习spring boot以及其他的知识写成博客以便自己回顾。  最近越来越忘事了… 网络大神很多，仅此用来记事………   SpringBoot 实践目录Github参考地址一、工程搭建二、服务注册与发现三、配置中心服务四、负载均衡Ribbon五、F">
+<meta name="keywords" content="Springboot,SpringCloud">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Springboot - 实践系列">
+<meta property="og:url" content="http://blog.kakme.com/2017-08-30-springboot-series/index.html">
+<meta property="og:site_name" content="代码间的无聊生活">
+<meta property="og:description" content="絮絮叨叨  2015年12月准备开始写博客，写下3篇spring batch后就没再写；一则工作忙，再则一直在以新的姿势学习。  最近还是准备将自己学习spring boot以及其他的知识写成博客以便自己回顾。  最近越来越忘事了… 网络大神很多，仅此用来记事………   SpringBoot 实践目录Github参考地址一、工程搭建二、服务注册与发现三、配置中心服务四、负载均衡Ribbon五、F">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-11-12T17:50:55.587Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Springboot - 实践系列">
+<meta name="twitter:description" content="絮絮叨叨  2015年12月准备开始写博客，写下3篇spring batch后就没再写；一则工作忙，再则一直在以新的姿势学习。  最近还是准备将自己学习spring boot以及其他的知识写成博客以便自己回顾。  最近越来越忘事了… 网络大神很多，仅此用来记事………   SpringBoot 实践目录Github参考地址一、工程搭建二、服务注册与发现三、配置中心服务四、负载均衡Ribbon五、F">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.kakme.com/2017-08-30-springboot-series/"/>
+
+
+
+
+
+  <title>Springboot - 实践系列 | 代码间的无聊生活</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <!-- 引入github -->
+    <a href="https://github.com/cwenao">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+    </a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">代码间的无聊生活</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">心见是新</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.kakme.com/2017-08-30-springboot-series/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cwenao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://bimg.kakme.com/head_xiaqiu.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="代码间的无聊生活">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Springboot - 实践系列</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-08-30T09:31:21+08:00">
+                2017-08-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Springboot-SpringCloud/" itemprop="url" rel="index">
+                    <span itemprop="name">Springboot/SpringCloud</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017-08-30-springboot-series/" class="leancloud_visitors" data-flag-title="Springboot - 实践系列">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p><strong>絮絮叨叨</strong></p>
+<blockquote>
+<p>2015年12月准备开始写博客，写下3篇spring batch后就没再写；一则工作忙，再则一直在以新的姿势学习。<br>  最近还是准备将自己学习spring boot以及其他的知识写成博客以便自己回顾。<br>  最近越来越忘事了…<br> 网络大神很多，仅此用来记事………</p>
+</blockquote>
+</blockquote>
+<h2 id="SpringBoot-实践目录"><a href="#SpringBoot-实践目录" class="headerlink" title="SpringBoot 实践目录"></a><strong>SpringBoot 实践目录</strong></h2><h4 id="Github参考地址"><a href="#Github参考地址" class="headerlink" title="Github参考地址"></a><a href="https://github.com/cwenao/springboot_cwenao" target="_blank" rel="external">Github参考地址</a></h4><h4 id="一、工程搭建"><a href="#一、工程搭建" class="headerlink" title="一、工程搭建"></a><a href="http://blog.csdn.net/cwenao/article/details/54293391" target="_blank" rel="external">一、工程搭建</a></h4><h4 id="二、服务注册与发现"><a href="#二、服务注册与发现" class="headerlink" title="二、服务注册与发现"></a><a href="http://blog.csdn.net/cwenao/article/details/54425265" target="_blank" rel="external">二、服务注册与发现</a></h4><h4 id="三、配置中心服务"><a href="#三、配置中心服务" class="headerlink" title="三、配置中心服务"></a><a href="http://blog.csdn.net/cwenao/article/details/54426987" target="_blank" rel="external">三、配置中心服务</a></h4><h4 id="四、负载均衡Ribbon"><a href="#四、负载均衡Ribbon" class="headerlink" title="四、负载均衡Ribbon"></a><a href="http://blog.csdn.net/cwenao/article/details/54565971" target="_blank" rel="external">四、负载均衡Ribbon</a></h4><h4 id="五、Feign-声明式web-service"><a href="#五、Feign-声明式web-service" class="headerlink" title="五、Feign 声明式web service"></a><a href="http://blog.csdn.net/cwenao/article/details/54571816" target="_blank" rel="external">五、Feign 声明式web service</a></h4><h4 id="六、服务网关APIGateway"><a href="#六、服务网关APIGateway" class="headerlink" title="六、服务网关APIGateway"></a><a href="http://blog.csdn.net/cwenao/article/details/54572648" target="_blank" rel="external">六、服务网关APIGateway</a></h4><h4 id="七、熔断机制-Circuit-Breaker"><a href="#七、熔断机制-Circuit-Breaker" class="headerlink" title="七、熔断机制 Circuit Breaker"></a><a href="http://blog.csdn.net/cwenao/article/details/54580349" target="_blank" rel="external">七、熔断机制 Circuit Breaker</a></h4><h4 id="八、日志集成-Log4j2"><a href="#八、日志集成-Log4j2" class="headerlink" title="八、日志集成 Log4j2"></a><a href="http://blog.csdn.net/cwenao/article/details/54600097" target="_blank" rel="external">八、日志集成 Log4j2</a></h4><h4 id="九、thymeleaf"><a href="#九、thymeleaf" class="headerlink" title="九、thymeleaf"></a><a href="http://blog.csdn.net/cwenao/article/details/54600127" target="_blank" rel="external">九、thymeleaf</a></h4><h4 id="十、Swagger2"><a href="#十、Swagger2" class="headerlink" title="十、Swagger2"></a><a href="http://blog.csdn.net/cwenao/article/details/54613266" target="_blank" rel="external">十、Swagger2</a></h4><h4 id="十、Kafka-一-环境搭建"><a href="#十、Kafka-一-环境搭建" class="headerlink" title="十、Kafka(一) 环境搭建"></a><a href="http://blog.csdn.net/cwenao/article/details/54613842" target="_blank" rel="external">十、Kafka(一) 环境搭建</a></h4><h4 id="十一、Kafka-二-Demo"><a href="#十一、Kafka-二-Demo" class="headerlink" title="十一、Kafka(二) Demo"></a><a href="http://blog.csdn.net/cwenao/article/details/54668590" target="_blank" rel="external">十一、Kafka(二) Demo</a></h4><h4 id="十二、集成Mybatis-Druid"><a href="#十二、集成Mybatis-Druid" class="headerlink" title="十二、集成Mybatis/Druid"></a><a href="http://blog.csdn.net/cwenao/article/details/54772939" target="_blank" rel="external">十二、集成Mybatis/Druid</a></h4><h4 id="十三、集成Redis-CacheManager"><a href="#十三、集成Redis-CacheManager" class="headerlink" title="十三、集成Redis/CacheManager"></a><a href="http://blog.csdn.net/cwenao/article/details/54773508" target="_blank" rel="external">十三、集成Redis/CacheManager</a></h4><h4 id="十四、集成Mongodb"><a href="#十四、集成Mongodb" class="headerlink" title="十四、集成Mongodb"></a><a href="http://blog.csdn.net/cwenao/article/details/54783050" target="_blank" rel="external">十四、集成Mongodb</a></h4><h4 id="十五、集成Elasticsearch"><a href="#十五、集成Elasticsearch" class="headerlink" title="十五、集成Elasticsearch"></a><a href="http://blog.csdn.net/cwenao/article/details/54943505" target="_blank" rel="external">十五、集成Elasticsearch</a></h4><h4 id="十六、Elasticsearch从mysql获取数据"><a href="#十六、Elasticsearch从mysql获取数据" class="headerlink" title="十六、Elasticsearch从mysql获取数据"></a><a href="http://blog.csdn.net/cwenao/article/details/54944937" target="_blank" rel="external">十六、Elasticsearch从mysql获取数据</a></h4><h4 id="十七、基于SpringDataHadoop集成HBASE"><a href="#十七、基于SpringDataHadoop集成HBASE" class="headerlink" title="十七、基于SpringDataHadoop集成HBASE"></a><a href="http://blog.csdn.net/cwenao/article/details/57980188" target="_blank" rel="external">十七、基于SpringDataHadoop集成HBASE</a></h4><h2 id="SpringBoot"><a href="#SpringBoot" class="headerlink" title="SpringBoot"></a><strong>SpringBoot</strong></h2><p>学习Springboot 主要为了完成自己对微服务的实践。<br>介绍什么的不再赘述。</p>
+<blockquote>
+<p><strong>框架、组件(比如SpringCloud包含的组件写到的时候再补充)</strong></p>
+<blockquote>
+<ul>
+<li>SpringBoot</li>
+<li>SpringCloud</li>
+<li>Redis、MongoDB、mysql</li>
+<li>Hystrix</li>
+<li>Kafka、RebittMQ</li>
+<li>Shiro、Spring Security</li>
+<li>Oauth2认证方式</li>
+<li>thymeleaf</li>
+<li>gradle、Maven</li>
+<li>git</li>
+</ul>
+</blockquote>
+<p><strong>服务</strong></p>
+<blockquote>
+<ul>
+<li>common：用于公共部分</li>
+<li>discovery:  注册中心</li>
+<li>configserver: 配置中心</li>
+<li>apiGateway: 服务网关</li>
+<li>Ribbon：负载均衡（基于HTTP与TCP）</li>
+<li>Feign: 声明式web service客户端</li>
+<li>Oauth2 : 认证鉴权</li>
+</ul>
+</blockquote>
+</blockquote>
+<hr>
+<h3 id="代码"><a href="#代码" class="headerlink" title="代码"></a><strong>代码</strong></h3><h4 id="代码请移步-Github-参考地址"><a href="#代码请移步-Github-参考地址" class="headerlink" title="代码请移步 Github 参考地址"></a>代码请移步 <a href="https://github.com/cwenao/springboot_cwenao" target="_blank" rel="external">Github 参考地址</a></h4><h2 id="如有疑问请加公众号（K171），如果觉得对您有帮助请-github-start"><a href="#如有疑问请加公众号（K171），如果觉得对您有帮助请-github-start" class="headerlink" title="如有疑问请加公众号（K171），如果觉得对您有帮助请 github start"></a>如有疑问请加公众号（K171），如果觉得对您有帮助请 <strong>github start</strong></h2>
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="http://bimg.kakme.com/k171.jpg?imageMogr2/auto-orient/thumbnail/!100p" alt="cwenao wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎关注微信公众号，虽然上面什么都没有！但是可以聊聊天不是么!</div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>一杯咖啡是坚持原创技术分享的动力！对了，别加糖！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://bimg.kakme.com/wex_payee.png?imageMogr2/auto-orient/thumbnail/!30p" alt="cwenao WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://bimg.kakme.com/ali_payee.png?imageMogr2/auto-orient/thumbnail/!30p" alt="cwenao Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    cwenao
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://blog.kakme.com/2017-08-30-springboot-series/" title="Springboot - 实践系列">http://blog.kakme.com/2017-08-30-springboot-series/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Springboot/" rel="tag"><i class="fa fa-tag"></i> Springboot</a>
+          
+            <a href="/tags/SpringCloud/" rel="tag"><i class="fa fa-tag"></i> SpringCloud</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017-08-30-start-personal-blog/" rel="prev" title="开始更新维护个人博客">
+                开始更新维护个人博客 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://bimg.kakme.com/head_xiaqiu.jpeg"
+               alt="cwenao" />
+          <p class="site-author-name" itemprop="name">cwenao</p>
+           
+              <p class="site-description motion-element" itemprop="description">在生活中写代码，在代码中寻找生活</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/cwenao" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/cwenao" target="_blank" title="csdn">
+                  
+                    <i class="fa fa-fw fa-spinner"></i>
+                  
+                    
+                      csdn
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/u/cec2e8665f7b" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot-实践目录"><span class="nav-number">1.</span> <span class="nav-text">SpringBoot 实践目录</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Github参考地址"><span class="nav-number">1.0.1.</span> <span class="nav-text">Github参考地址</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#一、工程搭建"><span class="nav-number">1.0.2.</span> <span class="nav-text">一、工程搭建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#二、服务注册与发现"><span class="nav-number">1.0.3.</span> <span class="nav-text">二、服务注册与发现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#三、配置中心服务"><span class="nav-number">1.0.4.</span> <span class="nav-text">三、配置中心服务</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#四、负载均衡Ribbon"><span class="nav-number">1.0.5.</span> <span class="nav-text">四、负载均衡Ribbon</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#五、Feign-声明式web-service"><span class="nav-number">1.0.6.</span> <span class="nav-text">五、Feign 声明式web service</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#六、服务网关APIGateway"><span class="nav-number">1.0.7.</span> <span class="nav-text">六、服务网关APIGateway</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#七、熔断机制-Circuit-Breaker"><span class="nav-number">1.0.8.</span> <span class="nav-text">七、熔断机制 Circuit Breaker</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#八、日志集成-Log4j2"><span class="nav-number">1.0.9.</span> <span class="nav-text">八、日志集成 Log4j2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#九、thymeleaf"><span class="nav-number">1.0.10.</span> <span class="nav-text">九、thymeleaf</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#十、Swagger2"><span class="nav-number">1.0.11.</span> <span class="nav-text">十、Swagger2</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#十、Kafka-一-环境搭建"><span class="nav-number">1.0.12.</span> <span class="nav-text">十、Kafka(一) 环境搭建</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#十一、Kafka-二-Demo"><span class="nav-number">1.0.13.</span> <span class="nav-text">十一、Kafka(二) Demo</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#十二、集成Mybatis-Druid"><span class="nav-number">1.0.14.</span> <span class="nav-text">十二、集成Mybatis/Druid</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#十三、集成Redis-CacheManager"><span class="nav-number">1.0.15.</span> <span class="nav-text">十三、集成Redis/CacheManager</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#十四、集成Mongodb"><span class="nav-number">1.0.16.</span> <span class="nav-text">十四、集成Mongodb</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#十五、集成Elasticsearch"><span class="nav-number">1.0.17.</span> <span class="nav-text">十五、集成Elasticsearch</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#十六、Elasticsearch从mysql获取数据"><span class="nav-number">1.0.18.</span> <span class="nav-text">十六、Elasticsearch从mysql获取数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#十七、基于SpringDataHadoop集成HBASE"><span class="nav-number">1.0.19.</span> <span class="nav-text">十七、基于SpringDataHadoop集成HBASE</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot"><span class="nav-number">2.</span> <span class="nav-text">SpringBoot</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#代码"><span class="nav-number">2.1.</span> <span class="nav-text">代码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#代码请移步-Github-参考地址"><span class="nav-number">2.1.1.</span> <span class="nav-text">代码请移步 Github 参考地址</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如有疑问请加公众号（K171），如果觉得对您有帮助请-github-start"><span class="nav-number">3.</span> <span class="nav-text">如有疑问请加公众号（K171），如果觉得对您有帮助请 github start</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">cwenao</span>
+</div>
+
+
+<div class="powered-by">
+  <i class="fa fa-user-md">
+    <span id="busuanzi_container_site_pv">
+      总访问量<span id="busuanzi_value_site_pv"></span>次
+    </span>
+  </i>
+</div>
+<!--<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>-->
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/fastclick/1.0.6/fastclick.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazyload/1.9.3/jquery.lazyload.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.ui.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/fancybox/2.1.5/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Xg8awHRFym68sfMkbJnMXeqI-gzGzoHsz", "RB5bK0wlJXvkBfE41UTedOOT");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>

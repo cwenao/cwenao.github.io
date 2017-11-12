@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+  <link href="//cdn.jsdelivr.net/fancybox/2.1.5/jquery.fancybox.min.css" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="fonts.useso.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+  
+
+<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Springboot,SpringCloud,webhook," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="配置中心服务器  配置中心服务器，以版本的管理方式对分布式系统提供外部配置支持； SpringCloud中采用Spring Cloud Config 进行集成，而想要进行实施更新则需要采用spring cloud bus的方式, 如 Rabbit、Kafka 等。 版本管理采用 Git 这里采用Kafka,因为本地有开发测试环境 服务注册与发现参考 /bus/refresh 为消息总线带来的刷新方">
+<meta name="keywords" content="Springboot,SpringCloud,webhook">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Springboot - 配置中心服务&#x2F;webhook">
+<meta property="og:url" content="http://blog.kakme.com/2017-11-12-springboot-configure-center-and-webhook-implement/index.html">
+<meta property="og:site_name" content="代码间的无聊生活">
+<meta property="og:description" content="配置中心服务器  配置中心服务器，以版本的管理方式对分布式系统提供外部配置支持； SpringCloud中采用Spring Cloud Config 进行集成，而想要进行实施更新则需要采用spring cloud bus的方式, 如 Rabbit、Kafka 等。 版本管理采用 Git 这里采用Kafka,因为本地有开发测试环境 服务注册与发现参考 /bus/refresh 为消息总线带来的刷新方">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://img.blog.csdn.net/20170114161515541?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170210105111159?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170210105222848?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170210105241286?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:image" content="http://img.blog.csdn.net/20170210105356880?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+<meta property="og:updated_time" content="2017-11-12T08:30:30.420Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Springboot - 配置中心服务&#x2F;webhook">
+<meta name="twitter:description" content="配置中心服务器  配置中心服务器，以版本的管理方式对分布式系统提供外部配置支持； SpringCloud中采用Spring Cloud Config 进行集成，而想要进行实施更新则需要采用spring cloud bus的方式, 如 Rabbit、Kafka 等。 版本管理采用 Git 这里采用Kafka,因为本地有开发测试环境 服务注册与发现参考 /bus/refresh 为消息总线带来的刷新方">
+<meta name="twitter:image" content="http://img.blog.csdn.net/20170114161515541?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"right","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.kakme.com/2017-11-12-springboot-configure-center-and-webhook-implement/"/>
+
+
+
+
+
+  <title>Springboot - 配置中心服务/webhook | 代码间的无聊生活</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-right page-post-detail ">
+    <div class="headband"></div>
+
+    <!-- 引入github -->
+    <a href="https://github.com/cwenao">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+    </a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">代码间的无聊生活</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">心见是新</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.kakme.com/2017-11-12-springboot-configure-center-and-webhook-implement/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="cwenao">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://bimg.kakme.com/head_xiaqiu.jpeg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="代码间的无聊生活">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Springboot - 配置中心服务/webhook</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-11-12T14:19:04+08:00">
+                2017-11-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Springboot-SpringCloud/" itemprop="url" rel="index">
+                    <span itemprop="name">Springboot/SpringCloud</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2017-11-12-springboot-configure-center-and-webhook-implement/" class="leancloud_visitors" data-flag-title="Springboot - 配置中心服务/webhook">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="配置中心服务器"><a href="#配置中心服务器" class="headerlink" title="配置中心服务器"></a><strong>配置中心服务器</strong></h1><blockquote>
+<ul>
+<li>配置中心服务器，以版本的管理方式对分布式系统提供外部配置支持；</li>
+<li>SpringCloud中采用Spring Cloud Config 进行集成，而想要进行实施更新则需要采用spring cloud bus的方式, 如 Rabbit、Kafka 等。</li>
+<li>版本管理采用 Git</li>
+<li>这里采用Kafka,因为本地有开发测试环境</li>
+<li><a href="http://blog.csdn.net/cwenao/article/details/54425265" target="_blank" rel="external">服务注册与发现参考</a></li>
+<li><strong>/bus/refresh</strong> 为消息总线带来的刷新方式，可以手动调用<blockquote>
+<ul>
+<li><strong>destination参数：</strong>用于刷新指定的应用服务</li>
+<li><strong>e.g.</strong> /bus/refresh?destination=feignserver:8084</li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</blockquote>
+<h2 id="配置中心服务"><a href="#配置中心服务" class="headerlink" title="配置中心服务"></a><strong>配置中心服务</strong></h2><h3 id="创建配置中心服务module"><a href="#创建配置中心服务module" class="headerlink" title="创建配置中心服务module"></a><strong>创建配置中心服务module</strong></h3><p>在<strong>build.gradle</strong>引入：<strong>cloud:spring-cloud-config-server</strong>、<strong>spring-boot-autoconfigure</strong>; 因为我们还想可以自动更新所以引入 <strong>spring-cloud-starter-bus-kafka</strong>,引入<strong>spring-boot-starter-actuator、spring-cloud-config-monitor</strong>用于监听</p>
+<p><strong>build.gradle</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div></pre></td><td class="code"><pre><div class="line">apply plugin: &apos;org.springframework.boot&apos;</div><div class="line"></div><div class="line">dependencyManagement &#123;</div><div class="line">    imports &#123;</div><div class="line">        mavenBom &quot;org.springframework.cloud:spring-cloud-dependencies:&quot;+ springCloudVersion</div><div class="line">        mavenBom &quot;org.springframework.boot:spring-boot-dependencies:&quot;+ springBootVersion</div><div class="line">        mavenBom &quot;org.springframework.boot:spring-boot-starter:&quot;+ springBootVersion</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">dependencies &#123;</div><div class="line">    compile(&apos;org.springframework.cloud:spring-cloud-config-server&apos;)</div><div class="line">    compile(&apos;org.springframework.cloud:spring-cloud-starter-eureka&apos;)</div><div class="line">    compile(&apos;org.springframework.boot:spring-boot-autoconfigure&apos;)</div><div class="line">    compile(&apos;org.springframework.cloud:spring-cloud-starter-bus-kafka&apos;)</div><div class="line">    compile(&apos;org.springframework.boot:spring-boot-starter-log4j2&apos;)</div><div class="line">	compile(&apos;org.springframework.boot:spring-boot-starter-actuator&apos;)</div><div class="line">    compile(&apos;org.springframework.cloud:spring-cloud-config-monitor&apos;)</div><div class="line">    compile(&apos;org.apache.logging.log4j:log4j-1.2-api:&apos;+ log4jAPIVersion)</div><div class="line">    compile(&apos;org.xerial.snappy:snappy-java:&apos; + snappyVersion)</div><div class="line">    testCompile(&apos;org.springframework.boot:spring-boot-starter-test&apos;)</div><div class="line"></div><div class="line">    testCompile group: &apos;junit&apos;, name: &apos;junit&apos;, version: &apos;4.11&apos;</div><div class="line">&#125;</div><div class="line"></div><div class="line">configurations &#123;</div><div class="line">    all*.exclude module: &apos;spring-boot-starter-logging&apos;</div><div class="line">    all*.exclude module: &apos;logback-classic&apos;</div><div class="line">    all*.exclude module: &apos;log4j-over-slf4j&apos;</div><div class="line">    all*.exclude module: &apos;snappy-java&apos;</div><div class="line">&#125;</div><div class="line"></div><div class="line">sourceSets &#123;</div><div class="line">    main &#123;</div><div class="line">        resources.srcDirs = [&apos;src/main/resources&apos;, &apos;src/main/java&apos;]</div><div class="line">        resources.includes = [&apos;**/*.xml&apos;, &apos;**/*.yml&apos;]</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line">jar &#123;</div><div class="line">    baseName = &apos;configserver-bootcwenao&apos;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>因为引入了<strong>spring-cloud-starter-bus-kafka</strong>需要排除掉这个组件自带 logback，然后又需要兼容本身的log，所以还需要引入<strong>org.apache.logging.log4j:log4j-1.2-api</strong></p>
+<p>排除logging</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">configurations &#123;</div><div class="line">    all*.exclude module: &apos;spring-boot-starter-logging&apos;</div><div class="line">    all*.exclude module: &apos;logback-classic&apos;</div><div class="line">    all*.exclude module: &apos;log4j-over-slf4j&apos;</div><div class="line">    all*.exclude module: &apos;snappy-java&apos;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在<strong>application.yml</strong>中配置<strong>Git</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">spring:</div><div class="line">  cloud:</div><div class="line">    config:</div><div class="line">      server:</div><div class="line">        git:</div><div class="line">          uri: https://git.oschina.net/youraccount/project/</div><div class="line">          search-paths: dir</div><div class="line">          username: xxxxxxxx@xx.com</div><div class="line">          password: xxxxxx</div><div class="line">          default-label: master</div></pre></td></tr></table></figure>
+<p>在<strong>application.yml</strong>中配置<strong>Kafka</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">spring:</div><div class="line">  cloud:</div><div class="line">    stream:</div><div class="line">      kafka:</div><div class="line">        binder:</div><div class="line">          brokers: localhost:9092</div><div class="line">          zk-nodes: localhost:2181</div></pre></td></tr></table></figure>
+<p>通过 <strong>@EnableConfigServer</strong> 启用配置服务<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">/**</div><div class="line"> * @author cwenao</div><div class="line"> * @version $Id ConfigserverBootcwenaoApplication.java, v 0.1 2017-01-12 14:21 cwenao Exp $$</div><div class="line"> */</div><div class="line">@EnableDiscoveryClient</div><div class="line">@SpringBootApplication</div><div class="line">@EnableAutoConfiguration</div><div class="line">@EnableConfigServer</div><div class="line">public class ConfigserverBootcwenaoApplication &#123;</div><div class="line">    public static void main(String[] args) &#123;</div><div class="line">        new SpringApplicationBuilder(ConfigserverBootcwenaoApplication.class).web(true).run(args);</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<h3 id="创建Config-Client服务"><a href="#创建Config-Client服务" class="headerlink" title="创建Config-Client服务"></a><strong>创建Config-Client服务</strong></h3><p>在<strong>build.gradle</strong>引入：<strong>cloud:spring-cloud-starter-config</strong>，同时引入 <strong>spring-cloud-starter-bus-kafka</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div></pre></td><td class="code"><pre><div class="line">apply plugin: &apos;org.springframework.boot&apos;</div><div class="line">dependencyManagement &#123;</div><div class="line">    imports &#123;</div><div class="line">        mavenBom &quot;org.springframework.cloud:spring-cloud-dependencies:&quot;+ springCloudVersion</div><div class="line">        mavenBom &quot;org.springframework.boot:spring-boot-dependencies:&quot;+ springBootVersion</div><div class="line">        mavenBom &quot;org.springframework.boot:spring-boot-starter:&quot;+ springBootVersion</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">dependencies &#123;</div><div class="line">    compile(&apos;org.springframework.cloud:spring-cloud-starter-config&apos;)</div><div class="line">    compile(&apos;org.springframework.cloud:spring-cloud-starter-eureka&apos;)</div><div class="line">    compile(&apos;org.springframework.cloud:spring-cloud-netflix-sidecar&apos;)</div><div class="line">    compile(&apos;org.springframework.cloud:spring-cloud-starter-bus-kafka&apos;)</div><div class="line">    compile(&apos;org.springframework.cloud:spring-cloud-stream&apos;)</div><div class="line">    compile(&apos;org.xerial.snappy:snappy-java:&apos; + snappyVersion)</div><div class="line">    compile (&apos;org.springframework.boot:spring-boot-starter-web&apos;)</div><div class="line">    compile(&apos;org.springframework.boot:spring-boot-starter-log4j2&apos;)</div><div class="line">    compile(&apos;org.apache.logging.log4j:log4j-1.2-api:&apos;+ log4jAPIVersion)</div><div class="line"></div><div class="line">    testCompile(&apos;org.springframework.boot:spring-boot-starter-test&apos;)</div><div class="line">    testCompile group: &apos;junit&apos;, name: &apos;junit&apos;, version: &apos;4.11&apos;</div><div class="line"></div><div class="line">&#125;</div><div class="line"></div><div class="line">configurations &#123;</div><div class="line">    all*.exclude module: &apos;spring-boot-starter-logging&apos;</div><div class="line">    all*.exclude module: &apos;logback-classic&apos;</div><div class="line">    all*.exclude module: &apos;log4j-over-slf4j&apos;</div><div class="line">    all*.exclude module: &apos;snappy-java&apos;</div><div class="line">&#125;</div><div class="line"></div><div class="line">sourceSets &#123;</div><div class="line">    main &#123;</div><div class="line">        resources.srcDirs = [&apos;src/main/resources&apos;, &apos;src/main/java&apos;]</div><div class="line">        resources.includes = [&apos;**/*.xml&apos;, &apos;**/*.yml&apos;]</div><div class="line">    &#125;</div><div class="line">&#125;</div><div class="line">jar &#123;</div><div class="line">    baseName = &apos;apigateway-bootcwenao&apos;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>配置 <strong>bootstarp.yml</strong> 中 <strong>discovery</strong>开启访问配置服务中心</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line">server:</div><div class="line">  port: 10002</div><div class="line">sidecar:</div><div class="line">  port: 20001</div><div class="line">#configServer</div><div class="line">spring:</div><div class="line">  application:</div><div class="line">    name: apigateway</div><div class="line">  profiles:</div><div class="line">    active: dev</div><div class="line">  cloud:</div><div class="line">    config:</div><div class="line">      uri: http://localhost:8888/</div><div class="line">    discovery:</div><div class="line">      enabled: true</div><div class="line">    stream:</div><div class="line">      kafka:</div><div class="line">        binder:</div><div class="line">          brokers: localhost:9092</div><div class="line">          zk-nodes: localhost:2181</div></pre></td></tr></table></figure>
+<p>注解 <strong>@EnableDiscoveryClient</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">@SpringCloudApplication</div><div class="line">@EnableDiscoveryClient</div><div class="line">@EnableSidecar</div><div class="line">public class ApiGatewayBootcwenaoApplication &#123;</div><div class="line"></div><div class="line">	public static void main(String[] args) &#123;</div><div class="line">		SpringApplication.run(ApiGatewayBootcwenaoApplication.class, args);</div><div class="line">	&#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>Git 中文件名字 apigateway-dev.yml</strong><br>内容为原先在本地的配置</p>
+<h3 id="启动顺序"><a href="#启动顺序" class="headerlink" title="启动顺序"></a><strong>启动顺序</strong></h3><p>服务注册中心 –&gt; 配置中心 –&gt; 其他服务</p>
+<p>访问 <strong><a href="http://localhost:8761" target="_blank" rel="external">http://localhost:8761</a></strong></p>
+<blockquote>
+<p>可以看到配置中心服务于想依赖的服务都已经启动注册成功</p>
+</blockquote>
+<p><img src="http://img.blog.csdn.net/20170114161515541?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="注册中心"></p>
+<h3 id="手动调用刷新"><a href="#手动调用刷新" class="headerlink" title="手动调用刷新"></a><strong>手动调用刷新</strong></h3><blockquote>
+<ul>
+<li>修改任意的配置文件</li>
+<li>在<strong>postman中调用</strong> /bus/refresh ,<strong>post</strong>方式调用</li>
+</ul>
+</blockquote>
+<h2 id="自动更新配置-webhook"><a href="#自动更新配置-webhook" class="headerlink" title="自动更新配置/webhook"></a><strong>自动更新配置/webhook</strong></h2><h3 id="webhook配置"><a href="#webhook配置" class="headerlink" title="webhook配置"></a><strong>webhook配置</strong></h3><blockquote>
+<ul>
+<li>在<strong>application.yml</strong>中加入<strong>encrypt.key</strong></li>
+<li>此key与github上的<strong>Secret</strong>，gitoschina上的<strong>密码</strong>对应</li>
+<li><strong>webhook url: </strong> <a href="http://cwenao.eicp.net/configserver/bus/refresh" target="_blank" rel="external">http://cwenao.eicp.net/configserver/bus/refresh</a></li>
+</ul>
+</blockquote>
+<p><strong>application.yml</strong><br><figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">encrypt:</div><div class="line">	key: cwenao</div></pre></td></tr></table></figure></p>
+<h4 id="git仓库-webhook配置"><a href="#git仓库-webhook配置" class="headerlink" title="git仓库 webhook配置"></a><strong>git仓库 webhook配置</strong></h4><p><img src="http://img.blog.csdn.net/20170210105111159?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="Github webhook"></p>
+<p><img src="http://img.blog.csdn.net/20170210105222848?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="webhook入口"></p>
+<p><img src="http://img.blog.csdn.net/20170210105241286?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="url与 secret"></p>
+<p><img src="http://img.blog.csdn.net/20170210105356880?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvY3dlbmFv/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast" alt="配置完成"></p>
+<h2 id="可能的错误"><a href="#可能的错误" class="headerlink" title="可能的错误"></a><strong>可能的错误</strong></h2><blockquote>
+<ul>
+<li>zookeeper没有读取到</li>
+<li>kafka没启动</li>
+<li>log4j2与其他冲突</li>
+<li>git uri地址错误，需要最后加“/”</li>
+</ul>
+</blockquote>
+<hr>
+<h2 id="代码"><a href="#代码" class="headerlink" title="代码"></a><strong>代码</strong></h2><h4 id="代码请移步-Github参考地址"><a href="#代码请移步-Github参考地址" class="headerlink" title="代码请移步 Github参考地址"></a>代码请移步 <a href="https://github.com/cwenao/springboot_cwenao" target="_blank" rel="external">Github参考地址</a></h4><h2 id="如有疑问请加公众号（K171），如果觉得对您有帮助请-github-start"><a href="#如有疑问请加公众号（K171），如果觉得对您有帮助请-github-start" class="headerlink" title="如有疑问请加公众号（K171），如果觉得对您有帮助请 github start"></a>如有疑问请加公众号（K171），如果觉得对您有帮助请 <strong>github start</strong></h2>
+      
+    </div>
+    
+    
+    
+
+    
+      <div>
+        <div id="wechat_subscriber" style="display: block; padding: 10px 0; margin: 20px auto; width: 100%; text-align: center">
+    <img id="wechat_subscriber_qcode" src="http://bimg.kakme.com/k171.jpg?imageMogr2/auto-orient/thumbnail/!100p" alt="cwenao wechat" style="width: 200px; max-width: 100%;"/>
+    <div>欢迎关注微信公众号，虽然上面什么都没有！但是可以聊聊天不是么!</div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <div style="padding: 10px 0; margin: 20px auto; width: 90%; text-align: center;">
+  <div>一杯咖啡是坚持原创技术分享的动力！对了，别加糖！</div>
+  <button id="rewardButton" disable="enable" onclick="var qr = document.getElementById('QR'); if (qr.style.display === 'none') {qr.style.display='block';} else {qr.style.display='none'}">
+    <span>Donate</span>
+  </button>
+  <div id="QR" style="display: none;">
+
+    
+      <div id="wechat" style="display: inline-block">
+        <img id="wechat_qr" src="http://bimg.kakme.com/wex_payee.png?imageMogr2/auto-orient/thumbnail/!30p" alt="cwenao WeChat Pay"/>
+        <p>WeChat Pay</p>
+      </div>
+    
+
+    
+      <div id="alipay" style="display: inline-block">
+        <img id="alipay_qr" src="http://bimg.kakme.com/ali_payee.png?imageMogr2/auto-orient/thumbnail/!30p" alt="cwenao Alipay"/>
+        <p>Alipay</p>
+      </div>
+    
+
+    
+
+  </div>
+</div>
+
+      </div>
+    
+
+    
+      <div>
+        <ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>本文作者：</strong>
+    cwenao
+  </li>
+  <li class="post-copyright-link">
+    <strong>本文链接：</strong>
+    <a href="http://blog.kakme.com/2017-11-12-springboot-configure-center-and-webhook-implement/" title="Springboot - 配置中心服务/webhook">http://blog.kakme.com/2017-11-12-springboot-configure-center-and-webhook-implement/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>
+    本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/" rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+
+      </div>
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Springboot/" rel="tag"><i class="fa fa-tag"></i> Springboot</a>
+          
+            <a href="/tags/SpringCloud/" rel="tag"><i class="fa fa-tag"></i> SpringCloud</a>
+          
+            <a href="/tags/webhook/" rel="tag"><i class="fa fa-tag"></i> webhook</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017-11-12-springboot-register-and-discovery/" rel="next" title="Springboot - 服务注册与发现">
+                <i class="fa fa-chevron-left"></i> Springboot - 服务注册与发现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017-11-12-springboot-loadbanlance-ribbon/" rel="prev" title="Springboot - Ribbon：负载均衡">
+                Springboot - Ribbon：负载均衡 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://bimg.kakme.com/head_xiaqiu.jpeg"
+               alt="cwenao" />
+          <p class="site-author-name" itemprop="name">cwenao</p>
+           
+              <p class="site-description motion-element" itemprop="description">在生活中写代码，在代码中寻找生活</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">25</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">4</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">30</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/cwenao" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://blog.csdn.net/cwenao" target="_blank" title="csdn">
+                  
+                    <i class="fa fa-fw fa-spinner"></i>
+                  
+                    
+                      csdn
+                    
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://www.jianshu.com/u/cec2e8665f7b" target="_blank" title="简书">
+                  
+                    <i class="fa fa-fw fa-heartbeat"></i>
+                  
+                    
+                      简书
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#配置中心服务器"><span class="nav-number">1.</span> <span class="nav-text">配置中心服务器</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#配置中心服务"><span class="nav-number">1.1.</span> <span class="nav-text">配置中心服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建配置中心服务module"><span class="nav-number">1.1.1.</span> <span class="nav-text">创建配置中心服务module</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建Config-Client服务"><span class="nav-number">1.1.2.</span> <span class="nav-text">创建Config-Client服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动顺序"><span class="nav-number">1.1.3.</span> <span class="nav-text">启动顺序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#手动调用刷新"><span class="nav-number">1.1.4.</span> <span class="nav-text">手动调用刷新</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#自动更新配置-webhook"><span class="nav-number">1.2.</span> <span class="nav-text">自动更新配置/webhook</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#webhook配置"><span class="nav-number">1.2.1.</span> <span class="nav-text">webhook配置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#git仓库-webhook配置"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">git仓库 webhook配置</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可能的错误"><span class="nav-number">1.3.</span> <span class="nav-text">可能的错误</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码"><span class="nav-number">1.4.</span> <span class="nav-text">代码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#代码请移步-Github参考地址"><span class="nav-number">1.4.0.1.</span> <span class="nav-text">代码请移步 Github参考地址</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如有疑问请加公众号（K171），如果觉得对您有帮助请-github-start"><span class="nav-number">1.5.</span> <span class="nav-text">如有疑问请加公众号（K171），如果觉得对您有帮助请 github start</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright" >
+  
+  &copy;  2016 - 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">cwenao</span>
+</div>
+
+
+<div class="powered-by">
+  <i class="fa fa-user-md">
+    <span id="busuanzi_container_site_pv">
+      总访问量<span id="busuanzi_value_site_pv"></span>次
+    </span>
+  </i>
+</div>
+<!--<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>-->
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/jquery/2.1.3/jquery.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/fastclick/1.0.6/fastclick.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/jquery.lazyload/1.9.3/jquery.lazyload.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/velocity/1.2.3/velocity.ui.min.js"></script>
+
+  
+  <script type="text/javascript" src="//cdn.jsdelivr.net/fancybox/2.1.5/jquery.fancybox.pack.js"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.2"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("Xg8awHRFym68sfMkbJnMXeqI-gzGzoHsz", "RB5bK0wlJXvkBfE41UTedOOT");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+  
+
+
+  
+
+  
+
+</body>
+</html>
